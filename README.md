@@ -1,0 +1,3 @@
+# PanaxJS
+
+PanaxDB Abstraction Class
