@@ -227,7 +227,11 @@ Class.prototype.getConfig = function(args, callback) {
 		var sql_str = 'EXEC [$Table].exportConfig';
 
 		if(args.length) {
-			sql_str = 'EXEC [$Table].config ' + '\'' + args.join('\', \'') + '\'';
+			sql_str = 'EXEC [$Table].config \'' + args[0] + '\'';
+			if(args.length > 1)
+				sql_str += ', \'' + args[1] + '\''
+			// if(args.length > 2) // ToDo: Not working in PanaxDB
+			// 	sql_str += ', \'' + args[2] + '\''
 		}
 
 		sql_req.query(sql_str, function (err, recordset) {
