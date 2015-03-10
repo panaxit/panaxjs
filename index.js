@@ -270,6 +270,33 @@ Class.prototype.clearConfig = function(args, callback) {
 }
 
 /**
+ * Wrapper for SQL Query:
+ * [$Table].clearCache
+ */
+Class.prototype.clearCache = function(args, callback) {
+	var that = this;
+
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
+
+		var sql_req = new sql.Request();
+		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].clearCache ';
+
+		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
+
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
+
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			callback(null, recordset);
+		});
+	});
+}
+
+/**
  * Get Catalog object from XML
  */
 Class.prototype.getCatalog = function(xml, callback) {
