@@ -212,6 +212,36 @@ Class.prototype.getXML = function(callback) {
 };
 
 /**
+ * Wrapper for SQL Queries:
+ * [$Table].exportConfig
+ * [$Table].config
+ */
+Class.prototype.getConfig = function(args, callback) {
+	var that = this;
+
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
+
+		var sql_req = new sql.Request();
+		var sql_str = 'EXEC [$Table].exportConfig';
+
+		if(args.length) {
+			sql_str = 'EXEC [$Table].config ' + '\'' + args.join('\', \'') + '\'';
+		}
+
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
+
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			callback(null, recordset);
+		});
+	});
+}
+
+/**
  * Get Catalog object from XML
  */
 Class.prototype.getCatalog = function(xml, callback) {
