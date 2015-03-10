@@ -215,8 +215,9 @@ Class.prototype.getXML = function(callback) {
  * Wrapper for SQL Queries:
  * [$Table].exportConfig
  * [$Table].config
+ * [$Table].clearConfig
  */
-Class.prototype.tableConfig = function(args, callback) {
+Class.prototype.tableConfig = function(args, clear, callback) {
 	var that = this;
 
 	sql.connect(that.config.db, function (err) {
@@ -226,8 +227,12 @@ Class.prototype.tableConfig = function(args, callback) {
 		var sql_req = new sql.Request();
 		var sql_str = 'EXEC [$Table].exportConfig';
 
-		if(args.length) {
+		if(clear)
+			sql_str = 'EXEC [$Table].clearConfig ';
+		else if (args.length)
 			sql_str = 'EXEC [$Table].config ';
+
+		if(args.length) {
 			args.forEach(function (arg, idx) {
 				sql_str += '\'' + arg + '\'';
 				if(idx < args.length - 1)
