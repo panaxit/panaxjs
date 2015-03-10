@@ -297,6 +297,31 @@ Class.prototype.clearCache = function(args, callback) {
 }
 
 /**
+ * Wrapper for SQL Query:
+ * [$Metadata].rebuild
+ */
+Class.prototype.rebuildMetadata = function(callback) {
+	var that = this;
+
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
+
+		var sql_req = new sql.Request();
+		var sql_str = 'EXEC [$Metadata].rebuild';
+
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
+
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			callback(null, recordset);
+		});
+	});
+}
+
+/**
  * Get Catalog object from XML
  */
 Class.prototype.getCatalog = function(xml, callback) {
