@@ -216,7 +216,7 @@ Class.prototype.getXML = function(callback) {
  * [$Table].exportConfig
  * [$Table].config
  */
-Class.prototype.getConfig = function(args, callback) {
+Class.prototype.tableConfig = function(args, callback) {
 	var that = this;
 
 	sql.connect(that.config.db, function (err) {
@@ -227,11 +227,12 @@ Class.prototype.getConfig = function(args, callback) {
 		var sql_str = 'EXEC [$Table].exportConfig';
 
 		if(args.length) {
-			sql_str = 'EXEC [$Table].config \'' + args[0] + '\'';
-			if(args.length > 1)
-				sql_str += ', \'' + args[1] + '\''
-			// if(args.length > 2) // ToDo: Not working in PanaxDB
-			// 	sql_str += ', \'' + args[2] + '\''
+			sql_str = 'EXEC [$Table].config ';
+			args.forEach(function (arg, idx) {
+				sql_str += '\'' + arg + '\'';
+				if(idx < args.length - 1)
+					sql_str += ', ';
+			});
 		}
 
 		sql_req.query(sql_str, function (err, recordset) {
