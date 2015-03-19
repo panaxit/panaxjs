@@ -5,7 +5,7 @@
  *
  * HowTo instantiate:
  *
- * var Panax = new require('Panax')(config, options);
+ * var Panax = new require('Panax')(config, params);
  * 
  */
 var sql = require('mssql');
@@ -31,31 +31,31 @@ var mkdirp = require('mkdirp');
 /**
  * Constructor
  */
-var Class = function(config, options) {
+var Class = function(config, params) {
 	
 	this.config = config;
 
-	if(!options) {
-		this.options = {};
+	if(!params) {
+		this.params = {};
 	} else {
-		this.options = {
-			userId: options.userId,
-			tableName: options.tableName,
-			output: options.output,
-			getData: options.getData || '1',
-			getStructure: options.getStructure || '1',
-			rebuild: options.rebuild || 'DEFAULT',
-			controlType: options.controlType || 'DEFAULT',
-			mode: options.mode || 'DEFAULT',
-			pageIndex: options.pageIndex || 'DEFAULT',
-			pageSize: options.pageSize || 'DEFAULT',
-			maxRecords: options.maxRecords || 'DEFAULT',
-			parameters: options.parameters || 'DEFAULT',
-			filters: options.filters || 'DEFAULT',
-			sorters: options.sorters || 'DEFAULT',
-			fullPath: options.fullPath || 'DEFAULT',
-			columnList: options.columnList || 'DEFAULT',
-			lang: options.lang || 'DEFAULT'
+		this.params = {
+			userId: params.userId,
+			tableName: params.tableName,
+			output: params.output,
+			getData: params.getData || '1',
+			getStructure: params.getStructure || '1',
+			rebuild: params.rebuild || 'DEFAULT',
+			controlType: params.controlType || 'DEFAULT',
+			mode: params.mode || 'DEFAULT',
+			pageIndex: params.pageIndex || 'DEFAULT',
+			pageSize: params.pageSize || 'DEFAULT',
+			maxRecords: params.maxRecords || 'DEFAULT',
+			parameters: params.parameters || 'DEFAULT',
+			filters: params.filters || 'DEFAULT',
+			sorters: params.sorters || 'DEFAULT',
+			fullPath: params.fullPath || 'DEFAULT',
+			columnList: params.columnList || 'DEFAULT',
+			lang: params.lang || 'DEFAULT'
 		};
 	}
 };
@@ -64,23 +64,23 @@ var Class = function(config, options) {
  * Property setter
  */
 Class.prototype.set = function(prop, value) {
-	if (this.options.hasOwnProperty(prop)) {
-		this.options[prop] = value;
+	if (this.params.hasOwnProperty(prop)) {
+		this.params[prop] = value;
 	}
 };
 
 /**
  * To Array
  */
-Class.prototype.toArray = function() {
+Class.prototype.toParamsArray = function(params) {
 	var result = [];
 	var prefix = '@';
 	var quote = '';
 
-	for (var prop in this.options) {
+	for (var prop in params) {
 		prefix = (prop !== 'userId') ? '@' : '@@';
 		quote = (prop !== 'tableName') ? '' : '\'';
-		result.push(prefix + prop + '=' + quote + this.options[prop] + quote);
+		result.push(prefix + prop + '=' + quote + params[prop] + quote);
 	}
 
 	return result;
@@ -89,8 +89,8 @@ Class.prototype.toArray = function() {
 /**
  * To String
  */
-Class.prototype.toString = function() {
-	return this.toArray().join(', ');
+Class.prototype.toParamsString = function(params) {
+	return this.toParamsArray(params).join(', ');
 };
 
 /**
@@ -163,7 +163,7 @@ Class.prototype.getSitemap = function(callback) {
 			return callback(err);
 
 		var sql_req = new sql.Request();
-		var sql_str = '[$Security].UserSitemap @@userId=' + that.options.userId;
+		var sql_str = '[$Security].UserSitemap @@userId=' + that.params.userId;
 
 		sql_req.query(sql_str, function (err, recordset) {
 			if (err)
@@ -193,7 +193,7 @@ Class.prototype.getXML = function(callback) {
 			return callback(err);
 
 		var sql_req = new sql.Request();
-		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].getXmlData ' + that.toString();
+		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
 
 		sql_req.query(sql_str, function (err, recordset) {
 			if (err)
@@ -348,7 +348,7 @@ Class.prototype.getCatalog = function(xml, callback) {
 
 Class.prototype.getFilename = function(catalog, callback) {
 	var sLocation = path.join(
-		this.config.ui.guis[this.options.output].cache,
+		this.config.ui.guis[this.params.output].cache,
 		catalog.dbId,
 		catalog.lang,
 		catalog.Table_Schema,
@@ -359,7 +359,7 @@ Class.prototype.getFilename = function(catalog, callback) {
 	var sFileName = path.join(sLocation, catalog.controlType + '.js');
 
 	// ToDo: Use Async functions?
-	if(fs.existsSync(sFileName) && this.options.rebuild !== '1') {
+	if(fs.existsSync(sFileName) && this.params.rebuild !== '1') {
 		console.info('# PanaxJS - Existing file: ' + sFileName);
 		callback(null, true, sFileName);
 	} else {
