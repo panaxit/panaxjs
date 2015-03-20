@@ -27,6 +27,13 @@ var mkdirp = require('mkdirp');
 // - ln 167-169: Filters: Set identityKey filter
 // - ln 172-175: Filters: Join filters
 // - ln: 177-186: Sorters
+// 
+// ToDo from xmlCatalogOptions.asp:
+// @Filters
+// @extraOptions
+// @sortDirection
+// @orderBy
+// @enableInsert
 
 /**
  * Constructor
@@ -175,6 +182,37 @@ Class.prototype.getSitemap = function(callback) {
 
 			if(!xml)
 				return callback({message: "Error: Missing Sitemap XML"});
+
+			callback(null, xml);
+		});
+	});
+};
+
+/**
+ * Wrapper for SQL Query:
+ * [$Table].getCatalogOptions
+ */
+Class.prototype.getCatalogOptions = function(args, callback) {
+	var that = this;
+
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
+
+		var sql_req = new sql.Request();
+		var sql_str = 'EXEC [$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
+									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
+
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
+
+			console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			var xml = recordset[0][''];
+
+			if(!xml)
+				return callback({message: "Error: Missing XML Data"});
 
 			callback(null, xml);
 		});
