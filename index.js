@@ -70,7 +70,7 @@ var Class = function(config, params) {
 /**
  * Property setter
  */
-Class.prototype.set = function(prop, value) {
+Class.prototype.setParam = function(prop, value) {
 	if (this.params.hasOwnProperty(prop)) {
 		this.params[prop] = value;
 	}
@@ -232,7 +232,7 @@ Class.prototype.getXML = function(callback) {
 
 		var sql_req = new sql.Request();
 		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
-
+console.log(sql_str)
 		sql_req.query(sql_str, function (err, recordset) {
 			if (err)
 				return callback(err);
