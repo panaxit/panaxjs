@@ -82,12 +82,17 @@ Class.prototype.setParam = function(prop, value) {
 Class.prototype.toParamsArray = function(params) {
 	var result = [];
 	var prefix = '@';
-	var quote = '';
+	var value = '';
 
 	for (var prop in params) {
 		prefix = (prop !== 'userId') ? '@' : '@@';
-		quote = (prop !== 'tableName') ? '' : '\'';
-		result.push(prefix + prop + '=' + quote + params[prop] + quote);
+		value = params[prop];
+	
+		if(prop === 'tableName' || prop === 'mode')
+			if(value !== 'DEFAULT')
+				value = '\'' + params[prop] + '\'';
+
+		result.push(prefix + prop + '=' + value);
 	}
 
 	return result;
