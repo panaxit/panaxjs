@@ -67,6 +67,10 @@ var Class = function(config, params) {
 	}
 };
 
+/**********************
+ * Utility Methods
+ **********************/
+
 /**
  * Property setter
  */
@@ -106,153 +110,64 @@ Class.prototype.toParamsString = function(params) {
 };
 
 /**
- * Get Vendor Info
+ * Get Catalog object from XML
  */
-Class.prototype.getVendorInfo = function(callback) {
-	var that = this;
+Class.prototype.getCatalog = function(xml, callback) {
+	var xmlDoc = libxmljs.parseXml(xml); // Sync func
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
+	if(!xmlDoc)
+		return callback({message: "Error: Parsing XML"});
 
-		var sql_req = new sql.Request();
-		var sql_str = 'SELECT @@version as version';
+	var catalog = {
+		dbId: xmlDoc.root().attr("dbId").value(),
+		lang: xmlDoc.root().attr("lang").value(),
+		Table_Schema: xmlDoc.root().attr("Table_Schema").value(),
+		Table_Name: xmlDoc.root().attr("Table_Name").value(),
+		mode: xmlDoc.root().attr("mode").value(),
+		controlType: xmlDoc.root().attr("controlType").value()
+	};
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
+	var fileTemplate = xmlDoc.root().attr("fileTemplate");
+	if(fileTemplate)
+		catalog.fileTemplate = fileTemplate.value();
 
-			console.info('# PanaxJS - sql_str: ' + sql_str);
-
-			if(!recordset[0])
-				return callback({message: "Error: Missing Vendor Info"});
-
-			callback(null, recordset[0]);
-		});
-	});
+	callback(null, catalog);
 };
 
-/**
- * Wrapper for SQL Procedure:
- * [$PanaxDB].Authenticate
- */
-Class.prototype.authenticate = function(username, password, callback) {
-	var that = this;
+Class.prototype.getFilename = function(catalog, callback) {
+	var sLocation = path.join(
+		this.config.ui.guis[this.params.output].cache,
+		catalog.dbId,
+		catalog.lang,
+		catalog.Table_Schema,
+		catalog.Table_Name,
+		catalog.mode
+	);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
+	var sFileName = path.join(sLocation, catalog.controlType + '.js');
 
-		var sql_req = new sql.Request();
-		var sql_str = '[$Security].Authenticate';
+	// ToDo: Use Async functions?
+	if(fs.existsSync(sFileName) && this.params.rebuild !== '1') {
+		console.info('# PanaxJS - Existing file: ' + sFileName);
+		callback(null, true, sFileName);
+	} else {
+		if(fs.existsSync(sFileName)) {
+			fs.unlinkSync(sFileName);
+			console.info('# PanaxJS - Deleted file: ' + sFileName);
+		}
+		if(!fs.existsSync(sLocation)) {
+			mkdirp(sLocation);
+			console.info('# PanaxJS - Mkdirp folder: ' + sLocation);
+		}
 
-		sql_req.input('username', sql.VarChar, username);
-		sql_req.input('password', sql.VarChar, password);
-
-		sql_req.execute(sql_str, function (err, recordsets, returnValue) {
-			if (err)
-				return callback(err);
-
-			console.info('# PanaxJS - sql_str: ' + sql_str);
-
-			var userId = recordsets[0][0].userId;
-			//ToDo: oCn.execute "IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.ROUTINES IST WHERE routine_schema IN ('$Application') AND ROUTINE_NAME IN ('OnStartUp')) BEGIN EXEC [$Application].OnStartUp END"
-
-			callback(null, userId);
-		});
-	});
+		console.info('# PanaxJS - Missing file: ' + sFileName);
+		callback(null, false, sFileName);
+	}
 };
 
-/**
- * Wrapper for SQL Query:
- * [$PanaxDB].UserSitemap
- */
-Class.prototype.getSitemap = function(callback) {
-	var that = this;
-
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
-		var sql_str = '[$Security].UserSitemap @@userId=' + that.params.userId;
-
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
-			console.info('# PanaxJS - sql_str: ' + sql_str);
-
-			var xml = recordset[0]['userSiteMap'];
-
-			if(!xml)
-				return callback({message: "Error: Missing Sitemap XML"});
-
-			callback(null, xml);
-		});
-	});
-};
-
-/**
- * Wrapper for SQL Query:
- * [$Table].getCatalogOptions
- */
-Class.prototype.getCatalogOptions = function(args, callback) {
-	var that = this;
-
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
-		var sql_str = 'EXEC [$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
-									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
-
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
-			console.info('# PanaxJS - sql_str: ' + sql_str);
-
-			var xml = recordset[0][''];
-
-			if(!xml)
-				return callback({message: "Error: Missing XML Data"});
-
-			callback(null, xml);
-		});
-	});
-};
-
-/**
- * Wrapper for SQL Query:
- * [$PanaxDB].getXmlData
- */
-Class.prototype.getXML = function(callback) {
-	var that = this;
-
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
-		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
-console.log(sql_str)
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
-			console.info('# PanaxJS - sql_str: ' + sql_str);
-
-			var xml = recordset[0][''];
-
-			if(!xml)
-				return callback({message: "Error: Missing XML Data"});
-
-			callback(null, xml);
-		});
-	});
-};
+/**********************
+ * Config Methods
+ **********************/
 
 /**
  * Wrapper for SQL Queries:
@@ -364,61 +279,165 @@ Class.prototype.rebuildMetadata = function(callback) {
 	});
 }
 
+/**********************
+ * Session Methods
+ **********************/
+
 /**
- * Get Catalog object from XML
+ * Get Vendor Info
  */
-Class.prototype.getCatalog = function(xml, callback) {
-	var xmlDoc = libxmljs.parseXml(xml); // Sync func
+Class.prototype.getVendorInfo = function(callback) {
+	var that = this;
 
-	if(!xmlDoc)
-		return callback({message: "Error: Parsing XML"});
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
 
-	var catalog = {
-		dbId: xmlDoc.root().attr("dbId").value(),
-		lang: xmlDoc.root().attr("lang").value(),
-		Table_Schema: xmlDoc.root().attr("Table_Schema").value(),
-		Table_Name: xmlDoc.root().attr("Table_Name").value(),
-		mode: xmlDoc.root().attr("mode").value(),
-		controlType: xmlDoc.root().attr("controlType").value()
-	};
+		var sql_req = new sql.Request();
+		var sql_str = 'SELECT @@version as version';
 
-	var fileTemplate = xmlDoc.root().attr("fileTemplate");
-	if(fileTemplate)
-		catalog.fileTemplate = fileTemplate.value();
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
 
-	callback(null, catalog);
+			console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			if(!recordset[0])
+				return callback({message: "Error: Missing Vendor Info"});
+
+			callback(null, recordset[0]);
+		});
+	});
 };
 
-Class.prototype.getFilename = function(catalog, callback) {
-	var sLocation = path.join(
-		this.config.ui.guis[this.params.output].cache,
-		catalog.dbId,
-		catalog.lang,
-		catalog.Table_Schema,
-		catalog.Table_Name,
-		catalog.mode
-	);
+/**
+ * Wrapper for SQL Procedure:
+ * [$PanaxDB].Authenticate
+ */
+Class.prototype.authenticate = function(username, password, callback) {
+	var that = this;
 
-	var sFileName = path.join(sLocation, catalog.controlType + '.js');
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
 
-	// ToDo: Use Async functions?
-	if(fs.existsSync(sFileName) && this.params.rebuild !== '1') {
-		console.info('# PanaxJS - Existing file: ' + sFileName);
-		callback(null, true, sFileName);
-	} else {
-		if(fs.existsSync(sFileName)) {
-			fs.unlinkSync(sFileName);
-			console.info('# PanaxJS - Deleted file: ' + sFileName);
-		}
-		if(!fs.existsSync(sLocation)) {
-			mkdirp(sLocation);
-			console.info('# PanaxJS - Mkdirp folder: ' + sLocation);
-		}
+		var sql_req = new sql.Request();
+		var sql_str = '[$Security].Authenticate';
 
-		console.info('# PanaxJS - Missing file: ' + sFileName);
-		callback(null, false, sFileName);
-	}
+		sql_req.input('username', sql.VarChar, username);
+		sql_req.input('password', sql.VarChar, password);
+
+		sql_req.execute(sql_str, function (err, recordsets, returnValue) {
+			if (err)
+				return callback(err);
+
+			console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			var userId = recordsets[0][0].userId;
+			//ToDo: oCn.execute "IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.ROUTINES IST WHERE routine_schema IN ('$Application') AND ROUTINE_NAME IN ('OnStartUp')) BEGIN EXEC [$Application].OnStartUp END"
+
+			callback(null, userId);
+		});
+	});
 };
 
-// node.js module export
+/**
+ * Wrapper for SQL Query:
+ * [$PanaxDB].UserSitemap
+ */
+Class.prototype.getSitemap = function(callback) {
+	var that = this;
+
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
+
+		var sql_req = new sql.Request();
+		var sql_str = '[$Security].UserSitemap @@userId=' + that.params.userId;
+
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
+
+			console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			var xml = recordset[0]['userSiteMap'];
+
+			if(!xml)
+				return callback({message: "Error: Missing Sitemap XML"});
+
+			callback(null, xml);
+		});
+	});
+};
+
+/**********************
+ * CRUD Methods
+ **********************/
+
+/**
+ * Wrapper for SQL Query:
+ * [$Table].getCatalogOptions
+ */
+Class.prototype.getCatalogOptions = function(args, callback) {
+	var that = this;
+
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
+
+		var sql_req = new sql.Request();
+		var sql_str = 'EXEC [$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
+									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
+
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
+
+			console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			var xml = recordset[0][''];
+
+			if(!xml)
+				return callback({message: "Error: Missing XML Data"});
+
+			callback(null, xml);
+		});
+	});
+};
+
+/**
+ * Wrapper for SQL Query:
+ * [$PanaxDB].getXmlData
+ */
+Class.prototype.getXML = function(callback) {
+	var that = this;
+
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
+
+		var sql_req = new sql.Request();
+		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
+
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
+
+			console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			var xml = recordset[0][''];
+
+			if(!xml)
+				return callback({message: "Error: Missing XML Data"});
+
+			callback(null, xml);
+		});
+	});
+};
+
+/**********************
+ * Module Export
+ **********************/
+
 module.exports = Class;
