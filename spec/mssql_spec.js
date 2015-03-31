@@ -1,5 +1,5 @@
 /**
- * DB Jasmine tests
+ * MSSQL Tests
  */
 
 var sql = require('mssql');
@@ -8,7 +8,7 @@ var util = require('../lib/util');
 
 var userId;
 
-describe("panax.db MSSQL", function () {
+describe("MSSQL", function () {
 
 	it("should connect", function (done) {
 		sql.connect(panax_config.db, function (err) {
@@ -26,35 +26,6 @@ describe("panax.db MSSQL", function () {
 				if(!err) {
 					expect(recordset[0].number).toBe(1);
 				}
-				done();
-			});
-		});
-	});
-
-	it("should [$Security].Authenticate", function (done) {
-		sql.connect(panax_config.db, function (err) {
-			var sql_req = new sql.Request();
-
-			sql_req.input('username', sql.VarChar, panax_config.ui.username);
-			sql_req.input('password', sql.VarChar, util.md5(panax_config.ui.password));
-
-			sql_req.execute("[$Security].Authenticate", function (err, recordsets, returnValue) {
-				expect(err).toBeFalsy();
-				if(!err) {
-					expect(returnValue).toBeGreaterThan(-1);
-					userId = recordsets[0][0].userId;
-				}
-				done();
-			});
-		});
-	});
-
-	it("should get sitemap with '[$Security].UserSitemap'", function (done) {
-		sql.connect(panax_config.db, function (err) {
-			var sql_req = new sql.Request();
-
-			sql_req.query("[$Security].UserSitemap @@UserId="+userId, function (err, recordsets, returnValue) {
-				expect(err).toBeFalsy();
 				done();
 			});
 		});
