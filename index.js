@@ -134,6 +134,9 @@ Class.prototype.getCatalog = function(xml, callback) {
 	callback(null, catalog);
 };
 
+/**
+ * Get Filename Location from Catalog
+ */
 Class.prototype.getFilename = function(catalog, callback) {
 	var sLocation = path.join(
 		this.config.ui.guis[this.params.output].cache,
@@ -163,6 +166,29 @@ Class.prototype.getFilename = function(catalog, callback) {
 		console.info('# PanaxJS - Missing file: ' + sFileName);
 		callback(null, false, sFileName);
 	}
+};
+
+/**
+ * Get Results object from XML (from updateDB)
+ */
+Class.prototype.getResults = function(xml, callback) {
+	var xmlDoc = libxmljs.parseXml(xml); // Sync func
+
+	if(!xmlDoc)
+		return callback({message: "Error: Parsing XML"});
+
+	var results = [];
+
+	xmlDoc.root().childNodes().forEach(function (child) {
+		var res = {};
+		var attrs = child.attrs();
+		for(var i=0;i<attrs.length;i++) {
+			res[attrs[i].name()] = attrs[i].value();
+		}
+		results.push(res);
+	});
+
+	callback(null, results);
 };
 
 /**********************
@@ -410,6 +436,7 @@ Class.prototype.getCatalogOptions = function(args, callback) {
  * Wrapper for SQL Query:
  * [$PanaxDB].getXmlData
  */
+// ToDo: Rename to getXmlData?
 Class.prototype.getXML = function(callback) {
 	var that = this;
 
@@ -419,6 +446,36 @@ Class.prototype.getXML = function(callback) {
 
 		var sql_req = new sql.Request();
 		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
+
+		sql_req.query(sql_str, function (err, recordset) {
+			if (err)
+				return callback(err);
+
+			console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			var xml = recordset[0][''];
+
+			if(!xml)
+				return callback({message: "Error: Missing XML Data"});
+
+			callback(null, xml);
+		});
+	});
+};
+
+/**
+ * Wrapper for SQL Query:
+ * [$PanaxDB].UpdateDB
+ */
+Class.prototype.updateDB = function(xml, callback) {
+	var that = this;
+
+	sql.connect(that.config.db, function (err) {
+		if (err)
+			return callback(err);
+
+		var sql_req = new sql.Request();
+		var sql_str = "[$Tables].UpdateDB @userId=" + that.params.userId + ", @updateXML='" + xml + "'";
 
 		sql_req.query(sql_str, function (err, recordset) {
 			if (err)
