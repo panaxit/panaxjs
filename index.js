@@ -110,7 +110,7 @@ Class.prototype.toParamsString = function(params) {
 };
 
 /**
- * Get Catalog object from XML
+ * Get Catalog object from XML (from getXMLData)
  */
 Class.prototype.getCatalog = function(xml, callback) {
 	var xmlDoc = libxmljs.parseXml(xml); // Sync func

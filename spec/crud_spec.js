@@ -31,6 +31,7 @@ describe("CRUD", function () {
 			valueColumn: "Clave",
 			textColumn: "Pais"
 		};
+
 		oPanaxJS.getCatalogOptions(args, function (err, result) {
 			expect(err).toBeFalsy();
 			if(!err) {
@@ -50,8 +51,35 @@ describe("CRUD", function () {
 		});
 	});
 
-	// it("should PanaxJS.updateDB INSERT", function (done) {
-	// });
+	it("should PanaxJS.updateDB INSERT", function (done) {
+		var insertXML = 
+			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
+				'<dataRow identityValue="NULL" primaryValue="NULL">' + 
+					'<dataField name="Clave">\'\'NJ\'\'</dataField>' + 
+					'<dataField name="Pais">\'\'Nunca Jamas\'\'</dataField>' + 
+				'</dataRow>' + 
+			'</dataTable>';
+
+		oPanaxJS.updateDB(insertXML, function (err, xml) {
+			expect(err).toBeFalsy();
+			if(!err) {
+				expect(xml).toBeTruthy();
+				if(xml) {
+					oPanaxJS.getResults(xml, function (err, results) {
+						expect(err).toBeFalsy();
+						if(!err) {
+							expect(results).toBeTruthy();
+							expect(results[0]).toBeTruthy();
+							expect(results[0].status).toBe('success');
+							console.dir(results)
+						}
+						done();
+					});
+				}
+			}
+			done();
+		});
+	});
 
 	// it("should PanaxJS.updateDB UPDATE", function (done) {
 	// });
