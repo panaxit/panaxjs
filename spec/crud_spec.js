@@ -115,7 +115,35 @@ describe("CRUD", function () {
 		});
 	});
 
-	// it("should PanaxJS.updateDB DELETE", function (done) {
-	// });
+	it("should PanaxJS.updateDB DELETE", function (done) {
+		var deleteXML = 
+			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
+				'<deleteRow identityValue="NULL" primaryValue="\'\'NJ\'\'">' + 
+					'<dataField name="Clave" isPK="true">\'\'NJ\'\'</dataField>' + 
+				'</deleteRow>' + 
+			'</dataTable>';
+
+		oPanaxJS.updateDB(deleteXML, function (err, xml) {
+			expect(err).toBeFalsy();
+			if(!err) {
+				expect(xml).toBeTruthy();
+				if(xml) {
+					oPanaxJS.getResults(xml, function (err, results) {
+						expect(err).toBeFalsy();
+						if(!err) {
+							expect(results).toBeTruthy();
+							expect(results[0]).toBeTruthy();
+							expect(results[0].status).toBe('success');
+							expect(results[0].dataTable).toBe('CatalogosSistema.Pais');
+							//expect(results[0].primaryValue).toBe('NJ');
+							console.dir(results)
+						}
+						done();
+					});
+				}
+			}
+			done();
+		});
+	});
 
 });
