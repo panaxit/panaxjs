@@ -71,6 +71,8 @@ describe("CRUD", function () {
 							expect(results).toBeTruthy();
 							expect(results[0]).toBeTruthy();
 							expect(results[0].status).toBe('success');
+							expect(results[0].dataTable).toBe('CatalogosSistema.Pais');
+							expect(results[0].primaryValue).toBe('NJ');
 							console.dir(results)
 						}
 						done();
@@ -81,8 +83,37 @@ describe("CRUD", function () {
 		});
 	});
 
-	// it("should PanaxJS.updateDB UPDATE", function (done) {
-	// });
+	it("should PanaxJS.updateDB UPDATE", function (done) {
+		var updateXML = 
+			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
+				'<dataRow identityValue="NULL" primaryValue="\'\'NJ\'\'">' + 
+					'<dataField name="Clave" isPK="true" previousValue="\'\'NJ\'\'">\'\'NJ\'\'</dataField>' + 
+					'<dataField name="Pais">\'\'Nueva Jamaica\'\'</dataField>' + 
+				'</dataRow>' + 
+			'</dataTable>';
+
+		oPanaxJS.updateDB(updateXML, function (err, xml) {
+			expect(err).toBeFalsy();
+			if(!err) {
+				expect(xml).toBeTruthy();
+				if(xml) {
+					oPanaxJS.getResults(xml, function (err, results) {
+						expect(err).toBeFalsy();
+						if(!err) {
+							expect(results).toBeTruthy();
+							expect(results[0]).toBeTruthy();
+							expect(results[0].status).toBe('success');
+							expect(results[0].dataTable).toBe('CatalogosSistema.Pais');
+							//expect(results[0].primaryValue).toBe('NJ');
+							console.dir(results)
+						}
+						done();
+					});
+				}
+			}
+			done();
+		});
+	});
 
 	// it("should PanaxJS.updateDB DELETE", function (done) {
 	// });
