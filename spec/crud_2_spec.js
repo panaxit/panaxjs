@@ -1,5 +1,5 @@
 /**
- * CRUD Methods Tests
+ * CRUD Methods Tests (2)
  */
 
 var PanaxJS = require('..');
@@ -7,12 +7,12 @@ var panax_config = require('../config/panax');
 var util = require('../lib/util');
 
 var oPanaxJS = new PanaxJS(panax_config, {
-	userId: undefined,
-	tableName: 'CatalogosSistema.Pais',
-	output: 'json'
+	userId: undefined
 });
 
-describe("CRUD", function () {
+var primaryValue;
+
+describe("CRUD 2", function () {
 
 	it("should PanaxJS.authenticate", function (done) {
 		oPanaxJS.authenticate(panax_config.ui.username, util.md5(panax_config.ui.password), function (err, userId) {
@@ -25,38 +25,13 @@ describe("CRUD", function () {
 		});
 	});
 
-	it("should PanaxJS.getCatalogOptions", function (done) {
-		var args = {
-			catalogName: "CatalogosSistema.Pais",
-			valueColumn: "Clave",
-			textColumn: "Pais"
-		};
-
-		oPanaxJS.getCatalogOptions(args, function (err, result) {
-			expect(err).toBeFalsy();
-			if(!err) {
-				expect(result).toBeTruthy();
-			}
-			done();
-		});
-	});
-
-	it("should PanaxJS.getXML", function (done) {
-		oPanaxJS.getXML(function (err, result) {
-			expect(err).toBeFalsy();
-			if(!err) {
-				expect(result).toBeTruthy();
-			}
-			done();
-		});
-	});
-
 	it("should PanaxJS.updateDB INSERT", function (done) {
 		var insertXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
+			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id" primaryKey="Id">' + 
 				'<dataRow identityValue="NULL" primaryValue="NULL">' + 
-					'<dataField name="Clave">\'\'NJ\'\'</dataField>' + 
-					'<dataField name="Pais">\'\'Nunca Jamas\'\'</dataField>' + 
+					'<dataField name="ShortTextField">\'\'Juan\'\'</dataField>' + 
+					'<dataField name="IntegerReq">10</dataField>' + 
+					'<dataField name="Float">42.3</dataField>' + 
 				'</dataRow>' + 
 			'</dataTable>';
 
@@ -71,8 +46,9 @@ describe("CRUD", function () {
 							expect(results).toBeTruthy();
 							expect(results[0]).toBeTruthy();
 							expect(results[0].status).toBe('success');
-							expect(results[0].dataTable).toBe('CatalogosSistema.Pais');
-							expect(results[0].primaryValue).toBe('NJ');
+							expect(results[0].dataTable).toBe('dbo.CONTROLS_Basic');
+							expect(results[0].primaryValue).toBeGreaterThan(0);
+							primaryValue = results[0].primaryValue;
 							console.dir(results)
 						}
 						done();
@@ -85,10 +61,9 @@ describe("CRUD", function () {
 
 	it("should PanaxJS.updateDB UPDATE", function (done) {
 		var updateXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
-				'<dataRow identityValue="NULL" primaryValue="\'\'NJ\'\'">' + 
-					'<dataField name="Clave" isPK="true" previousValue="\'\'NJ\'\'">\'\'NJ\'\'</dataField>' + 
-					'<dataField name="Pais">\'\'Nueva Jamaica\'\'</dataField>' + 
+			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id" primaryKey="Id">' + 
+				'<dataRow identityValue="' + primaryValue + '" primaryValue="' + primaryValue + '">' + 
+					'<dataField name="Float">32.4</dataField>' + 
 				'</dataRow>' + 
 			'</dataTable>';
 
@@ -103,7 +78,7 @@ describe("CRUD", function () {
 							expect(results).toBeTruthy();
 							expect(results[0]).toBeTruthy();
 							expect(results[0].status).toBe('success');
-							expect(results[0].dataTable).toBe('CatalogosSistema.Pais');
+							expect(results[0].dataTable).toBe('dbo.CONTROLS_Basic');
 							//expect(results[0].primaryValue).toBe('NJ');
 							console.dir(results)
 						}
@@ -117,9 +92,8 @@ describe("CRUD", function () {
 
 	it("should PanaxJS.updateDB DELETE", function (done) {
 		var deleteXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
-				'<deleteRow identityValue="NULL" primaryValue="\'\'NJ\'\'">' + 
-					'<dataField name="Clave" isPK="true">\'\'NJ\'\'</dataField>' + 
+			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id" primaryKey="Id">' + 
+				'<deleteRow identityValue="' + primaryValue + '" primaryValue="' + primaryValue + '">' + 
 				'</deleteRow>' + 
 			'</dataTable>';
 
@@ -134,7 +108,7 @@ describe("CRUD", function () {
 							expect(results).toBeTruthy();
 							expect(results[0]).toBeTruthy();
 							expect(results[0].status).toBe('success');
-							expect(results[0].dataTable).toBe('CatalogosSistema.Pais');
+							expect(results[0].dataTable).toBe('dbo.CONTROLS_Basic');
 							//expect(results[0].primaryValue).toBe('NJ');
 							console.dir(results)
 						}
