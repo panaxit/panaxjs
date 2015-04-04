@@ -109,6 +109,7 @@ Class.prototype.toParamsString = function(params) {
 	return this.toParamsArray(params).join(', ');
 };
 
+// ToDo: Rename to Parse Catalog (parseCatalog)
 /**
  * Get Catalog object from XML (from getXMLData)
  */
@@ -168,6 +169,7 @@ Class.prototype.getFilename = function(catalog, callback) {
 	}
 };
 
+// ToDo: Rename to Parse Results (parseResults)
 /**
  * Get Results object from XML (from updateDB)
  */
