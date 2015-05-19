@@ -204,12 +204,10 @@ Class.prototype.getResults = function(xml, callback) {
  */
 Class.prototype.tableConfig = function(args, callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = 'EXEC [$Table].exportConfig';
 
 		if(args.length) {
@@ -217,14 +215,15 @@ Class.prototype.tableConfig = function(args, callback) {
 			sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 		}
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			callback(null, recordset);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 }
 
@@ -234,24 +233,23 @@ Class.prototype.tableConfig = function(args, callback) {
  */
 Class.prototype.clearConfig = function(args, callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = 'EXEC [$Table].clearConfig ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			callback(null, recordset);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 }
 
@@ -261,24 +259,23 @@ Class.prototype.clearConfig = function(args, callback) {
  */
 Class.prototype.clearCache = function(args, callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].clearCache ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			callback(null, recordset);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 }
 
@@ -288,22 +285,21 @@ Class.prototype.clearCache = function(args, callback) {
  */
 Class.prototype.rebuildMetadata = function(callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = 'EXEC [$Metadata].rebuild';
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			callback(null, recordset);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 }
 
@@ -316,25 +312,24 @@ Class.prototype.rebuildMetadata = function(callback) {
  */
 Class.prototype.getVendorInfo = function(callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = 'SELECT @@version as version';
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			if(!recordset[0])
 				return callback({message: "Error: Missing Vendor Info"});
 
 			callback(null, recordset[0]);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 };
 
@@ -344,28 +339,27 @@ Class.prototype.getVendorInfo = function(callback) {
  */
 Class.prototype.authenticate = function(username, password, callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = '[$Security].Authenticate';
 
 		sql_req.input('username', sql.VarChar, username);
 		sql_req.input('password', sql.VarChar, password);
 
-		sql_req.execute(sql_str, function (err, recordsets, returnValue) {
-			if (err)
-				return callback(err);
-
+		sql_req.execute(sql_str).then(function (recordsets, returnValue) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var userId = recordsets[0][0].userId;
 			//ToDo: oCn.execute "IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.ROUTINES IST WHERE routine_schema IN ('$Application') AND ROUTINE_NAME IN ('OnStartUp')) BEGIN EXEC [$Application].OnStartUp END"
 
 			callback(null, userId);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 };
 
@@ -375,18 +369,13 @@ Class.prototype.authenticate = function(username, password, callback) {
  */
 Class.prototype.getSitemap = function(callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = '[$Security].UserSitemap @@userId=' + that.params.userId;
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var xml = recordset[0]['userSiteMap'];
@@ -395,7 +384,11 @@ Class.prototype.getSitemap = function(callback) {
 				return callback({message: "Error: Missing Sitemap XML"});
 
 			callback(null, xml);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 };
 
@@ -409,19 +402,14 @@ Class.prototype.getSitemap = function(callback) {
  */
 Class.prototype.getCatalogOptions = function(args, callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function() {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = 'EXEC [$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
 									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var xml = recordset[0][''];
@@ -430,7 +418,11 @@ Class.prototype.getCatalogOptions = function(args, callback) {
 				return callback({message: "Error: Missing XML Data"});
 
 			callback(null, xml);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 };
 
@@ -441,18 +433,13 @@ Class.prototype.getCatalogOptions = function(args, callback) {
 // ToDo: Rename to getXmlData?
 Class.prototype.getXML = function(callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var xml = recordset[0][''];
@@ -461,7 +448,11 @@ Class.prototype.getXML = function(callback) {
 				return callback({message: "Error: Missing XML Data"});
 
 			callback(null, xml);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 };
 
@@ -471,18 +462,13 @@ Class.prototype.getXML = function(callback) {
  */
 Class.prototype.updateDB = function(xml, callback) {
 	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
 
-	sql.connect(that.config.db, function (err) {
-		if (err)
-			return callback(err);
-
-		var sql_req = new sql.Request();
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
 		var sql_str = "[$Tables].UpdateDB @userId=" + that.params.userId + ", @updateXML='" + xml + "'";
 
-		sql_req.query(sql_str, function (err, recordset) {
-			if (err)
-				return callback(err);
-
+		sql_req.query(sql_str).then(function (recordset) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var xml = recordset[0][''];
@@ -491,7 +477,11 @@ Class.prototype.updateDB = function(xml, callback) {
 				return callback({message: "Error: Missing XML Data"});
 
 			callback(null, xml);
+		}).catch(function (err) {
+			callback(err);
 		});
+	}).catch(function (err) {
+		callback(err);
 	});
 };
 
