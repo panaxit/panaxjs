@@ -28,7 +28,7 @@ describe("CRUD", function () {
 	it("should PanaxJS.getCatalogOptions", function (done) {
 		var args = {
 			catalogName: "CatalogosSistema.Pais",
-			valueColumn: "Clave",
+			valueColumn: "Id",
 			textColumn: "Pais"
 		};
 
@@ -53,9 +53,9 @@ describe("CRUD", function () {
 
 	it("should PanaxJS.updateDB INSERT", function (done) {
 		var insertXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
+			'<dataTable name="CatalogosSistema.Pais" primaryKey="Id">' + 
 				'<dataRow identityValue="NULL" primaryValue="NULL">' + 
-					'<dataField name="Clave">\'\'NJ\'\'</dataField>' + 
+					'<dataField name="Id">\'\'NJ\'\'</dataField>' + 
 					'<dataField name="Pais">\'\'Nunca Jamas\'\'</dataField>' + 
 				'</dataRow>' + 
 			'</dataTable>';
@@ -85,9 +85,9 @@ describe("CRUD", function () {
 
 	it("should PanaxJS.updateDB UPDATE", function (done) {
 		var updateXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
+			'<dataTable name="CatalogosSistema.Pais" primaryKey="Id">' + 
 				'<dataRow identityValue="NULL" primaryValue="\'\'NJ\'\'">' + 
-					'<dataField name="Clave" isPK="true" previousValue="\'\'NJ\'\'">\'\'NJ\'\'</dataField>' + 
+					'<dataField name="Id" isPK="true" previousValue="\'\'NJ\'\'">\'\'NJ\'\'</dataField>' + 
 					'<dataField name="Pais">\'\'Nueva Jamaica\'\'</dataField>' + 
 				'</dataRow>' + 
 			'</dataTable>';
@@ -117,9 +117,9 @@ describe("CRUD", function () {
 
 	it("should PanaxJS.updateDB DELETE", function (done) {
 		var deleteXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Clave">' + 
+			'<dataTable name="CatalogosSistema.Pais" primaryKey="Id">' + 
 				'<deleteRow identityValue="NULL" primaryValue="\'\'NJ\'\'">' + 
-					'<dataField name="Clave" isPK="true">\'\'NJ\'\'</dataField>' + 
+					'<dataField name="Id" isPK="true">\'\'NJ\'\'</dataField>' + 
 				'</deleteRow>' + 
 			'</dataTable>';
 
