@@ -29,7 +29,6 @@ var mkdirp = require('mkdirp');
 // - ln: 177-186: Sorters
 // 
 // ToDo from xmlCatalogOptions.asp:
-// @Filters
 // @extraOptions
 // @sortDirection
 // @orderBy
@@ -408,6 +407,9 @@ Class.prototype.getCatalogOptions = function(args, callback) {
 		var sql_req = new sql.Request(sql_conn);
 		var sql_str = 'EXEC [$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
 									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
+
+		if(args.filters)
+			sql_str = sql_str + ", @filters=" + args.filters + "";
 
 		sql_req.query(sql_str).then(function (recordset) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
