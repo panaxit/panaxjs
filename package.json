@@ -1,20 +1,31 @@
 {
   "name": "panaxjs",
   "version": "0.0.1",
-  "description": "PanaxJS",
+  "author": "Benjamin Orozco <benoror@gmail.com>",
+  "description": "PanaxJS - Panax Driver",
   "main": "index.js",
+  "private": true,
+  "license": "Copyright 2015 PanaxIT (R)",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:all": "node node_modules/jasmine-node/bin/jasmine-node spec",
+    "test": "npm run test:all"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run test:all"
+    }
   },
   "repository": {
     "type": "git",
     "url": "https://benoror@bitbucket.org/benoror/panaxjs.git"
   },
-  "author": "Benjamin Orozco <benoror@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "libxslt": "^0.4.1",
     "mkdirp": "^0.5.0",
     "mssql": "^2.1.1"
+  },
+  "devDependencies": {
+    "ghooks": "^0.3.2",
+    "jasmine-node": "^1.14.5"
   }
 }
