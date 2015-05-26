@@ -207,10 +207,10 @@ Class.prototype.tableConfig = function(args, callback) {
 
 	sql_conn.connect().then(function () {
 		var sql_req = new sql.Request(sql_conn);
-		var sql_str = 'EXEC [$Table].exportConfig';
+		var sql_str = '[$Table].exportConfig';
 
 		if(args.length) {
-			sql_str = 'EXEC [$Table].config ';
+			sql_str = '[$Table].config ';
 			sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 		}
 
@@ -236,7 +236,7 @@ Class.prototype.clearConfig = function(args, callback) {
 
 	sql_conn.connect().then(function () {
 		var sql_req = new sql.Request(sql_conn);
-		var sql_str = 'EXEC [$Table].clearConfig ';
+		var sql_str = '[$Table].clearConfig ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 
@@ -262,7 +262,7 @@ Class.prototype.clearCache = function(args, callback) {
 
 	sql_conn.connect().then(function () {
 		var sql_req = new sql.Request(sql_conn);
-		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].clearCache ';
+		var sql_str = '[$Ver:' + that.config.db.version + '].clearCache ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 
@@ -288,7 +288,7 @@ Class.prototype.rebuildMetadata = function(callback) {
 
 	sql_conn.connect().then(function () {
 		var sql_req = new sql.Request(sql_conn);
-		var sql_str = 'EXEC [$Metadata].rebuild';
+		var sql_str = '[$Metadata].rebuild';
 
 		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
@@ -405,7 +405,7 @@ Class.prototype.getCatalogOptions = function(args, callback) {
 
 	sql_conn.connect().then(function() {
 		var sql_req = new sql.Request(sql_conn);
-		var sql_str = 'EXEC [$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
+		var sql_str = '[$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
 									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
 
 		if(args.filters)
@@ -439,7 +439,7 @@ Class.prototype.getXML = function(callback) {
 
 	sql_conn.connect().then(function () {
 		var sql_req = new sql.Request(sql_conn);
-		var sql_str = 'EXEC [$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
+		var sql_str = '[$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
 
 		sql_req.query(sql_str).then(function (recordset) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
