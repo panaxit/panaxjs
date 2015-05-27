@@ -170,7 +170,7 @@ Class.prototype.getFilename = function(catalog, callback) {
 
 // ToDo: Rename to Parse Results (parseResults)
 /**
- * Get Results object from XML (from updateDB)
+ * Get Results object from XML (from persist)
  */
 Class.prototype.getResults = function(xml, callback) {
 	var xmlDoc = libxmljs.parseXml(xml); // Sync func
@@ -460,15 +460,15 @@ Class.prototype.getXML = function(callback) {
 
 /**
  * Wrapper for SQL Query:
- * [$PanaxDB].UpdateDB
+ * #panax.persist
  */
-Class.prototype.updateDB = function(xml, callback) {
+Class.prototype.persist = function(xml, callback) {
 	var that = this;
 	var sql_conn = new sql.Connection(that.config.db);
 
 	sql_conn.connect().then(function () {
 		var sql_req = new sql.Request(sql_conn);
-		var sql_str = "[$Tables].UpdateDB @userId=" + that.params.userId + ", @updateXML='" + xml + "'";
+		var sql_str = "#panax.persist @userId=" + that.params.userId + ", @updateXML='" + xml + "'";
 
 		sql_req.query(sql_str).then(function (recordset) {
 			console.info('# PanaxJS - sql_str: ' + sql_str);
