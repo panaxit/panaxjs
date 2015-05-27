@@ -33,7 +33,7 @@ describe("Persist (primaryKey & identityKey)", function () {
 				'</insertRow>' + 
 			'</dataTable>';
 
-		oPanaxJS.updateDB(insertXML, function (err, xml) {
+		oPanaxJS.persist(insertXML, function (err, xml) {
 			expect(err).toBeFalsy();
 			if(!err) {
 				expect(xml).toBeTruthy();
@@ -66,7 +66,7 @@ describe("Persist (primaryKey & identityKey)", function () {
 				'</updateRow>' + 
 			'</dataTable>';
 
-		oPanaxJS.updateDB(updateXML, function (err, xml) {
+		oPanaxJS.persist(updateXML, function (err, xml) {
 			expect(err).toBeFalsy();
 			if(!err) {
 				expect(xml).toBeTruthy();
@@ -95,7 +95,7 @@ describe("Persist (primaryKey & identityKey)", function () {
 				'</deleteRow>' + 
 			'</dataTable>';
 
-		oPanaxJS.updateDB(deleteXML, function (err, xml) {
+		oPanaxJS.persist(deleteXML, function (err, xml) {
 			expect(err).toBeFalsy();
 			if(!err) {
 				expect(xml).toBeTruthy();
