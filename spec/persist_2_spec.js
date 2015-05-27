@@ -1,5 +1,8 @@
 /**
- * CRUD Methods Tests (2)
+ * Persist Test (2) (identityKey)
+ * 	- insertRow
+ * 	- updateRow
+ * 	- deleteRow
  */
 
 var PanaxJS = require('..');
@@ -10,29 +13,18 @@ var oPanaxJS = new PanaxJS(panax_config, {
 	userId: undefined
 });
 
-var primaryValue;
+var identityValue;
 
-describe("CRUD 2", function () {
+describe("Persist (identityKey)", function () {
 
-	it("should PanaxJS.authenticate", function (done) {
-		oPanaxJS.authenticate(panax_config.ui.username, util.md5(panax_config.ui.password), function (err, userId) {
-			expect(err).toBeFalsy();
-			if(!err) {
-				expect(userId).toBeTruthy();
-				oPanaxJS.setParam("userId", userId);
-			}
-			done();
-		});
-	});
-
-	it("should PanaxJS.updateDB INSERT", function (done) {
+	it("should insertRow", function (done) {
 		var insertXML = 
-			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id" primaryKey="Id">' + 
-				'<dataRow identityValue="NULL" primaryValue="NULL">' + 
-					'<dataField name="ShortTextField">\'\'Juan\'\'</dataField>' + 
-					'<dataField name="IntegerReq">10</dataField>' + 
-					'<dataField name="Float">42.3</dataField>' + 
-				'</dataRow>' + 
+			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+				'<insertRow>' + 
+					'<field name="ShortTextField">\'\'Juan\'\'</field>' + 
+					'<field name="IntegerReq">10</field>' + 
+					'<field name="Float">42.3</field>' + 
+				'</insertRow>' + 
 			'</dataTable>';
 
 		oPanaxJS.updateDB(insertXML, function (err, xml) {
@@ -47,8 +39,8 @@ describe("CRUD 2", function () {
 							expect(results[0]).toBeTruthy();
 							expect(results[0].status).toBe('success');
 							expect(results[0].dataTable).toBe('dbo.CONTROLS_Basic');
-							expect(results[0].primaryValue).toBeGreaterThan(0);
-							primaryValue = results[0].primaryValue;
+							expect(results[0].identityValue).toBeGreaterThan(0);
+							identityValue = results[0].identityValue;
 							console.dir(results)
 						}
 						done();
@@ -59,12 +51,12 @@ describe("CRUD 2", function () {
 		});
 	});
 
-	it("should PanaxJS.updateDB UPDATE", function (done) {
+	it("should updateRow", function (done) {
 		var updateXML = 
-			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id" primaryKey="Id">' + 
-				'<dataRow identityValue="' + primaryValue + '" primaryValue="' + primaryValue + '">' + 
-					'<dataField name="Float">32.4</dataField>' + 
-				'</dataRow>' + 
+			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+				'<updateRow identityValue="' + identityValue + '">' + 
+					'<field name="Float">32.4</field>' + 
+				'</updateRow>' + 
 			'</dataTable>';
 
 		oPanaxJS.updateDB(updateXML, function (err, xml) {
@@ -79,7 +71,6 @@ describe("CRUD 2", function () {
 							expect(results[0]).toBeTruthy();
 							expect(results[0].status).toBe('success');
 							expect(results[0].dataTable).toBe('dbo.CONTROLS_Basic');
-							//expect(results[0].primaryValue).toBe('NJ');
 							console.dir(results)
 						}
 						done();
@@ -90,10 +81,10 @@ describe("CRUD 2", function () {
 		});
 	});
 
-	it("should PanaxJS.updateDB DELETE", function (done) {
+	it("should deleteRow", function (done) {
 		var deleteXML = 
-			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id" primaryKey="Id">' + 
-				'<deleteRow identityValue="' + primaryValue + '" primaryValue="' + primaryValue + '">' + 
+			'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+				'<deleteRow identityValue="' + identityValue + '">' + 
 				'</deleteRow>' + 
 			'</dataTable>';
 
@@ -109,7 +100,6 @@ describe("CRUD 2", function () {
 							expect(results[0]).toBeTruthy();
 							expect(results[0].status).toBe('success');
 							expect(results[0].dataTable).toBe('dbo.CONTROLS_Basic');
-							//expect(results[0].primaryValue).toBe('NJ');
 							console.dir(results)
 						}
 						done();
