@@ -8,46 +8,6 @@
  * 	- dbo.Empleado
  */
 
-/*
-
-	<!-- insertRow -->
-	
-		<dataTable name="dbo.Empleado" identityKey="Id">
-			<insertRow>
-				<field name="RFC" isPK="true">\'\'GORU810929\'\'</field>
-				<field name="Nombre">\'\'Uriel\'\'</field>
-				<field name="ApellidoPaterno">\'\'Gómez\'\'</field>
-				<field name="ApellidoMaterno">\'\'Robles\'\'</field>
-				<field name="FechaNacimiento" out="true">NULL</field>
-				<field name="FechaCaptura" out="true">NULL</field>
-			</insertRow>
-		</dataTable>
-
-	<!-- updateRow -->
-
-		<dataTable name="dbo.Empleado" identityKey="Id">
-			<updateRow>
-				<field name="RFC" isPK="true" currentValue="\'\'GORU810929\'\'">\'\'GORU8109293T0\'\'</field>
-				<field name="Nombre">\'\'Uriel Mauricio\'\'</field>
-			</updateRow>
-		</dataTable>
-	
-	<!-- deleteRow -->
-
-		<dataTable name="dbo.Empleado" identityKey="Id">
-			<deleteRow identityValue="XXXXXXXXXX"/>
-		</dataTable>
-
-	<!-- OR -->
-
-		<dataTable name="dbo.Empleado" identityKey="Id">
-			<deleteRow>
-				<field name="RFC" isPK="true">\'\'GORU8109293T0\'\'</field>
-			</deleteRow>
-		</dataTable>
-
- */
-
 var PanaxJS = require('..');
 var panax_config = require('../config/panax');
 var util = require('../lib/util');

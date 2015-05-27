@@ -10,68 +10,6 @@
  * 	- dbo.Telefonos
  */
 
-/*
-	
-	<!-- insertRow -->
-
-	<dataTable name="dbo.Empleado" identityKey="Id">
-		<insertRow>
-			<field name="RFC" isPK="true">NULL</field>
-			<field name="Nombre">\'\'Uriel\'\'</field>
-			<field name="ApellidoPaterno">\'\'Gómez\'\'</field>
-			<field name="ApellidoMaterno">\'\'Robles\'\'</field>
-			<field name="FechaNacimiento" out="true">NULL</field>
-			<dataTable name="dbo.Domicilio">
-				<insertRow>
-					<fkey name="RFC" isPK="true" maps="RFC" />
-					<field name="Dirección" out="true">\'\'Primer domicilio\'\'</field>
-				</insertRow>
-			</dataTable>
-			<dataTable name="dbo.Telefonos">
-				<insertRow>
-					<fkey name="Sede" maps="Sede" />
-					<fkey name="Empleado" maps="RFC" />
-					<field name="Telefono" out="true">\'\'4448177771\'\'</field>
-				</insertRow>
-				<insertRow>
-					<fkey name="Sede" maps="Sede" />
-					<fkey name="Empleado" maps="RFC" />
-					<field name="Telefono" out="true">\'\'4441234567\'\'</field>
-				</insertRow>
-			</dataTable>
-		</insertRow>
-	</dataTable>
-	
-	<!-- updateRow -->
-
-	<dataTable name="dbo.Empleado" identityKey="Id">
-		<updateRow>
-			<field name="RFC" isPK="true">\'\'GORU8109293T0\'\'</field>
-			<dataTable name="dbo.Domicilio" identityKey="Id">
-				<updateRow>
-					<fkey name="RFC" isPK="true" maps="RFC" />
-					<field name="Dirección">\'\'Domicilio actualizado\'\'</field>
-				</updateRow>
-			</dataTable>
-		</updateRow>
-	</dataTable>
-	
-	<!-- deleteRow -->
-
-	<dataTable name="dbo.Empleado" identityKey="Id">
-		<deleteRow identityValue="XXXXXXXXXX"/>
-	</dataTable>
-
-	<!-- OR -->
-
-	<dataTable name="dbo.Empleado" identityKey="Id">
-		<deleteRow>
-			<field name="RFC" isPK="true">\'\'GORU8109293T0\'\'</field>
-		</deleteRow>
-	</dataTable>
-
- */
-
 var PanaxJS = require('..');
 var panax_config = require('../config/panax');
 var util = require('../lib/util');
