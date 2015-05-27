@@ -1,3 +1,3 @@
 # PanaxJS
 
-PanaxDB Abstraction Class
+PanaxDB Driver
