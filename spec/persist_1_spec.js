@@ -1,5 +1,8 @@
 /**
- * CRUD Methods Tests 1
+ * Persist Test (1) (primaryKey)
+ * 	- insertRow
+ * 	- updateRow
+ * 	- deleteRow
  */
 
 var PanaxJS = require('..');
@@ -7,57 +10,18 @@ var panax_config = require('../config/panax');
 var util = require('../lib/util');
 
 var oPanaxJS = new PanaxJS(panax_config, {
-	userId: undefined,
-	tableName: 'CatalogosSistema.Pais',
-	output: 'json'
+	userId: undefined
 });
 
-describe("CRUD", function () {
+describe("Persist (primaryKey)", function () {
 
-	it("should PanaxJS.authenticate", function (done) {
-		oPanaxJS.authenticate(panax_config.ui.username, util.md5(panax_config.ui.password), function (err, userId) {
-			expect(err).toBeFalsy();
-			if(!err) {
-				expect(userId).toBeTruthy();
-				oPanaxJS.setParam("userId", userId);
-			}
-			done();
-		});
-	});
-
-	it("should PanaxJS.getCatalogOptions", function (done) {
-		var args = {
-			catalogName: "CatalogosSistema.Pais",
-			valueColumn: "Id",
-			textColumn: "Pais"
-		};
-
-		oPanaxJS.getCatalogOptions(args, function (err, result) {
-			expect(err).toBeFalsy();
-			if(!err) {
-				expect(result).toBeTruthy();
-			}
-			done();
-		});
-	});
-
-	it("should PanaxJS.getXML", function (done) {
-		oPanaxJS.getXML(function (err, result) {
-			expect(err).toBeFalsy();
-			if(!err) {
-				expect(result).toBeTruthy();
-			}
-			done();
-		});
-	});
-
-	it("should PanaxJS.updateDB INSERT", function (done) {
+	it("should insertRow", function (done) {
 		var insertXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Id">' + 
-				'<dataRow identityValue="NULL" primaryValue="NULL">' + 
-					'<dataField name="Id">\'\'NJ\'\'</dataField>' + 
-					'<dataField name="Pais">\'\'Nunca Jamas\'\'</dataField>' + 
-				'</dataRow>' + 
+			'<dataTable name="CatalogosSistema.Pais">' + 
+				'<insertRow>' + 
+					'<field name="Id" isPK="true">\'\'NJ\'\'</field>' + 
+					'<field name="Pais">\'\'Nunca Jamas\'\'</field>' + 
+				'</insertRow>' + 
 			'</dataTable>';
 
 		oPanaxJS.updateDB(insertXML, function (err, xml) {
@@ -83,13 +47,13 @@ describe("CRUD", function () {
 		});
 	});
 
-	it("should PanaxJS.updateDB UPDATE", function (done) {
+	it("should updateRow", function (done) {
 		var updateXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Id">' + 
-				'<dataRow identityValue="NULL" primaryValue="\'\'NJ\'\'">' + 
-					'<dataField name="Id" isPK="true" previousValue="\'\'NJ\'\'">\'\'NJ\'\'</dataField>' + 
-					'<dataField name="Pais">\'\'Nueva Jamaica\'\'</dataField>' + 
-				'</dataRow>' + 
+			'<dataTable name="CatalogosSistema.Pais">' + 
+				'<updateRow>' + 
+					'<field name="Id" isPK="true" currentValue="\'\'NJ\'\'">\'\'NE\'\'</field>' + 
+					'<field name="Pais">\'\'Nueva Escocia\'\'</field>' + 
+				'</updateRow>' + 
 			'</dataTable>';
 
 		oPanaxJS.updateDB(updateXML, function (err, xml) {
@@ -115,11 +79,11 @@ describe("CRUD", function () {
 		});
 	});
 
-	it("should PanaxJS.updateDB DELETE", function (done) {
+	it("should deleteRow", function (done) {
 		var deleteXML = 
-			'<dataTable name="CatalogosSistema.Pais" primaryKey="Id">' + 
-				'<deleteRow identityValue="NULL" primaryValue="\'\'NJ\'\'">' + 
-					'<dataField name="Id" isPK="true">\'\'NJ\'\'</dataField>' + 
+			'<dataTable name="CatalogosSistema.Pais">' + 
+				'<deleteRow>' + 
+					'<field name="Id" isPK="true">\'\'NE\'\'</field>' + 
 				'</deleteRow>' + 
 			'</dataTable>';
 
