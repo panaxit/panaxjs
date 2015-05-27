@@ -9,13 +9,23 @@ var PanaxJS = require('..');
 var panax_config = require('../config/panax');
 var util = require('../lib/util');
 
-var oPanaxJS = new PanaxJS(panax_config, {
-	userId: undefined
-});
-
-var identityValue;
-
 describe("Persist (identityKey)", function () {
+
+	/*
+	ToDo: DDL Isolation Stuff
+	 */
+  // beforeAll(function() {
+  // // CREATE Table(s)
+  // });
+  // afterAll(function() {
+  // // DROP Table(s)
+  // });
+
+	var oPanaxJS = new PanaxJS(panax_config, {
+		userId: undefined
+	});
+
+	var identityValue;
 
 	it("should insertRow", function (done) {
 		var insertXML = 
@@ -109,5 +119,4 @@ describe("Persist (identityKey)", function () {
 			done();
 		});
 	});
-
 });

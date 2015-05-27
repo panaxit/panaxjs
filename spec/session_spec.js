@@ -6,9 +6,12 @@ var PanaxJS = require('..');
 var panax_config = require('../config/panax');
 var util = require('../lib/util');
 
-var oPanaxJS = new PanaxJS(panax_config, {userId: undefined});
-
 describe("Session", function () {
+
+	var oPanaxJS = new PanaxJS(panax_config, {
+		userId: undefined
+	});
+
 	it("should PanaxJS.getVendorInfo", function (done) {
 		oPanaxJS.getVendorInfo(function (err, result) {
 			expect(err).toBeFalsy();

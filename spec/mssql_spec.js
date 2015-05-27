@@ -6,8 +6,6 @@ var sql = require('mssql');
 var panax_config = require('../config/panax');
 var util = require('../lib/util');
 
-var userId;
-
 describe("MSSQL", function () {
 
 	it("should connect", function (done) {

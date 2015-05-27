@@ -8,13 +8,24 @@ var PanaxJS = require('..');
 var panax_config = require('../config/panax');
 var util = require('../lib/util');
 
-var oPanaxJS = new PanaxJS(panax_config, {
-	userId: undefined,
-	tableName: 'CatalogosSistema.Pais',
-	output: 'json'
-});
-
 describe("Read", function () {
+
+	/*
+	ToDo: DDL Isolation Stuff
+	 */
+  // beforeAll(function() {
+  // // CREATE Table(s)
+  // // INSERT Data
+  // });
+  // afterAll(function() {
+  // // DROP Table(s)
+  // });
+
+	var oPanaxJS = new PanaxJS(panax_config, {
+		userId: undefined,
+		tableName: 'CatalogosSistema.Pais',
+		output: 'json'
+	});
 
 	// it("should PanaxJS.authenticate", function (done) {
 	// 	oPanaxJS.authenticate(panax_config.ui.username, util.md5(panax_config.ui.password), function (err, userId) {

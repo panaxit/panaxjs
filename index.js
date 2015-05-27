@@ -149,7 +149,7 @@ Class.prototype.getFilename = function(catalog, callback) {
 
 	var sFileName = path.join(sLocation, catalog.controlType + '.js');
 
-	// ToDo: Use Async functions?
+	// ToDo: Use fs.Async functions?
 	if(fs.existsSync(sFileName) && this.params.rebuild !== '1') {
 		console.info('# PanaxJS - Existing file: ' + sFileName);
 		callback(null, true, sFileName);
@@ -432,7 +432,6 @@ Class.prototype.getCatalogOptions = function(args, callback) {
  * Wrapper for SQL Query:
  * [$PanaxDB].getXmlData
  */
-// ToDo: Rename to getXmlData?
 Class.prototype.getXML = function(callback) {
 	var that = this;
 	var sql_conn = new sql.Connection(that.config.db);
