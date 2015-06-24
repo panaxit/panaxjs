@@ -151,19 +151,19 @@ Class.prototype.getFilename = function(catalog, callback) {
 
 	// ToDo: Use fs.Async functions?
 	if(fs.existsSync(sFileName) && this.params.rebuild !== '1') {
-		console.info('# PanaxJS - Existing file: ' + sFileName);
+		//console.info('# PanaxJS - Existing file: ' + sFileName);
 		callback(null, true, sFileName);
 	} else {
 		if(fs.existsSync(sFileName)) {
 			fs.unlinkSync(sFileName);
-			console.info('# PanaxJS - Deleted file: ' + sFileName);
+			//console.info('# PanaxJS - Deleted file: ' + sFileName);
 		}
 		if(!fs.existsSync(sLocation)) {
 			mkdirp(sLocation);
-			console.info('# PanaxJS - Mkdirp folder: ' + sLocation);
+			//console.info('# PanaxJS - Mkdirp folder: ' + sLocation);
 		}
 
-		console.info('# PanaxJS - Missing file: ' + sFileName);
+		//console.info('# PanaxJS - Missing file: ' + sFileName);
 		callback(null, false, sFileName);
 	}
 };
@@ -318,7 +318,7 @@ Class.prototype.getVendorInfo = function(callback) {
 		var sql_str = 'SELECT @@version as version';
 
 		sql_req.query(sql_str).then(function (recordset) {
-			console.info('# PanaxJS - sql_str: ' + sql_str);
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			if(!recordset[0])
 				return callback({message: "Error: Missing Vendor Info"});
@@ -348,7 +348,7 @@ Class.prototype.authenticate = function(username, password, callback) {
 		sql_req.input('password', sql.VarChar, password);
 
 		sql_req.execute(sql_str).then(function (recordsets, returnValue) {
-			console.info('# PanaxJS - sql_str: ' + sql_str);
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var userId = recordsets[0][0].userId;
 			//ToDo: oCn.execute "IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.ROUTINES IST WHERE routine_schema IN ('$Application') AND ROUTINE_NAME IN ('OnStartUp')) BEGIN EXEC [$Application].OnStartUp END"
@@ -375,7 +375,7 @@ Class.prototype.getSitemap = function(callback) {
 		var sql_str = '[$Security].UserSitemap @@userId=' + that.params.userId;
 
 		sql_req.query(sql_str).then(function (recordset) {
-			console.info('# PanaxJS - sql_str: ' + sql_str);
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var xml = recordset[0]['userSiteMap'];
 
@@ -408,7 +408,7 @@ Class.prototype.read = function(callback) {
 		var sql_str = '[$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
 
 		sql_req.query(sql_str).then(function (recordset) {
-			console.info('# PanaxJS - sql_str: ' + sql_str);
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var xml = recordset[0][''];
 
@@ -441,7 +441,7 @@ Class.prototype.options = function(args, callback) {
 			sql_str = sql_str + ", @filters=" + args.filters + "";
 
 		sql_req.query(sql_str).then(function (recordset) {
-			console.info('# PanaxJS - sql_str: ' + sql_str);
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var xml = recordset[0][''];
 
@@ -474,7 +474,7 @@ Class.prototype.persist = function(xml, callback) {
 		var sql_str = "#panax.persist @userId=" + that.params.userId + ", @updateXML='" + xml + "'";
 
 		sql_req.query(sql_str).then(function (recordset) {
-			console.info('# PanaxJS - sql_str: ' + sql_str);
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
 
 			var xml = recordset[0][''];
 
