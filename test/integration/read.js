@@ -36,7 +36,7 @@ describe('Read', function() {
 				textColumn: "Pais"
 			};
 
-			panaxdb.getCatalogOptions(args, function (err, res) {
+			panaxdb.options(args, function (err, res) {
 				if(err) return done(err);
 				expect(res).to.be.ok;
 				done();
@@ -48,7 +48,7 @@ describe('Read', function() {
   describe('#getXML()', function() {
 
   	it('should return data', function(done) {
-			panaxdb.getXML(function (err, res) {
+			panaxdb.read(function (err, res) {
 				if(err) return done(err);
 				expect(res).to.be.ok;
 				done();

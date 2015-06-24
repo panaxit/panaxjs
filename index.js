@@ -197,11 +197,35 @@ Class.prototype.getResults = function(xml, callback) {
  **********************/
 
 /**
+ * Wrapper for SQL Query:
+ * [$Metadata].rebuild
+ */
+Class.prototype.rebuildMetadata = function(callback) {
+	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
+
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
+		var sql_str = '[$Metadata].rebuild';
+
+		sql_req.query(sql_str).then(function (recordset) {
+			//console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			callback(null, recordset);
+		}).catch(function (err) {
+			callback(err);
+		});
+	}).catch(function (err) {
+		callback(err);
+	});
+}
+
+/**
  * Wrapper for SQL Queries:
  * [$Table].exportConfig
  * [$Table].config
  */
-Class.prototype.tableConfig = function(args, callback) {
+Class.prototype.config = function(args, callback) {
 	var that = this;
 	var sql_conn = new sql.Connection(that.config.db);
 
@@ -265,30 +289,6 @@ Class.prototype.clearCache = function(args, callback) {
 		var sql_str = '[$Ver:' + that.config.db.version + '].clearCache ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
-
-		sql_req.query(sql_str).then(function (recordset) {
-			//console.info('# PanaxJS - sql_str: ' + sql_str);
-
-			callback(null, recordset);
-		}).catch(function (err) {
-			callback(err);
-		});
-	}).catch(function (err) {
-		callback(err);
-	});
-}
-
-/**
- * Wrapper for SQL Query:
- * [$Metadata].rebuild
- */
-Class.prototype.rebuildMetadata = function(callback) {
-	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
-
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
-		var sql_str = '[$Metadata].rebuild';
 
 		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
@@ -392,14 +392,43 @@ Class.prototype.getSitemap = function(callback) {
 };
 
 /**********************
- * CRUD Methods
+ * Read Methods
  **********************/
+
+/**
+ * Wrapper for SQL Query:
+ * [$PanaxDB].getXmlData
+ */
+Class.prototype.read = function(callback) {
+	var that = this;
+	var sql_conn = new sql.Connection(that.config.db);
+
+	sql_conn.connect().then(function () {
+		var sql_req = new sql.Request(sql_conn);
+		var sql_str = '[$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
+
+		sql_req.query(sql_str).then(function (recordset) {
+			console.info('# PanaxJS - sql_str: ' + sql_str);
+
+			var xml = recordset[0][''];
+
+			if(!xml)
+				return callback({message: "Error: Missing XML Data"});
+
+			callback(null, xml);
+		}).catch(function (err) {
+			callback(err);
+		});
+	}).catch(function (err) {
+		callback(err);
+	});
+};
 
 /**
  * Wrapper for SQL Query:
  * [$Table].getCatalogOptions
  */
-Class.prototype.getCatalogOptions = function(args, callback) {
+Class.prototype.options = function(args, callback) {
 	var that = this;
 	var sql_conn = new sql.Connection(that.config.db);
 
@@ -428,34 +457,9 @@ Class.prototype.getCatalogOptions = function(args, callback) {
 	});
 };
 
-/**
- * Wrapper for SQL Query:
- * [$PanaxDB].getXmlData
- */
-Class.prototype.getXML = function(callback) {
-	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
-
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
-		var sql_str = '[$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
-
-		sql_req.query(sql_str).then(function (recordset) {
-			console.info('# PanaxJS - sql_str: ' + sql_str);
-
-			var xml = recordset[0][''];
-
-			if(!xml)
-				return callback({message: "Error: Missing XML Data"});
-
-			callback(null, xml);
-		}).catch(function (err) {
-			callback(err);
-		});
-	}).catch(function (err) {
-		callback(err);
-	});
-};
+/**********************
+ * Persist Methods
+ **********************/
 
 /**
  * Wrapper for SQL Query:
