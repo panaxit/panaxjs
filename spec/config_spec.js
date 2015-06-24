@@ -1,5 +1,0 @@
-/**
- * Config Methods Tests
- */
-
-// ToDo
