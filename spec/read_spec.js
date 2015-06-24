@@ -10,33 +10,30 @@ var util = require('../lib/util');
 
 describe("Read", function () {
 
+	var oPanaxJS;
+
 	/*
 	ToDo: DDL Isolation Stuff
 	 */
-  // beforeAll(function() {
-  // // CREATE Table(s)
-  // // INSERT Data
-  // });
-  // afterAll(function() {
-  // // DROP Table(s)
-  // });
+  before(function() {
 
-	var oPanaxJS = new PanaxJS(panax_config, {
-		userId: undefined,
-		tableName: 'CatalogosSistema.Pais',
-		output: 'json'
-	});
+		oPanaxJS = new PanaxJS(panax_config, {
+			userId: undefined,
+			tableName: 'CatalogosSistema.Pais',
+			output: 'json'
+		});
 
-	// it("should PanaxJS.authenticate", function (done) {
-	// 	oPanaxJS.authenticate(panax_config.ui.username, util.md5(panax_config.ui.password), function (err, userId) {
-	// 		expect(err).toBeFalsy();
-	// 		if(!err) {
-	// 			expect(userId).toBeTruthy();
-	// 			oPanaxJS.setParam("userId", userId);
-	// 		}
-	// 		done();
-	// 	});
-	// });
+		oPanaxJS.authenticate(panax_config.ui.username, util.md5(panax_config.ui.password), function (err, userId) {
+			if(!err) {
+				oPanaxJS.setParam("userId", userId);
+			}
+		});
+  // CREATE Table(s)
+  // INSERT Data
+  });
+  afterAll(function() {
+  // DROP Table(s)
+  });
 
 	it("should getCatalogOptions", function (done) {
 		var args = {
