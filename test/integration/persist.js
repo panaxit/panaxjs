@@ -17,15 +17,15 @@ describe('Persist', function() {
 		});
   });
 
-	// ToDo: DDL Isolation Stuff
-  // before('isolation', function(done) {
-	//  // [persist_prep.sql] CREATE Table(s)
-  // });
-  // after(function() {
-  // 	// [persist_clean.sql] DROP Table(s)
-  // });
+  describe('Case 1: With primaryKey)', function() {
 
-  describe('simple (PK)', function() {
+		// ToDo: DDL Isolation Stuff
+	  // before('isolation', function(done) {
+		//  // [persist_prep.sql] CREATE Table(s)
+	  // });
+	  // after(function() {
+	  // 	// [persist_clean.sql] DROP Table(s)
+	  // });
 
 		it("should insertRow", function (done) {
 			var insertXML = 
@@ -69,6 +69,7 @@ describe('Persist', function() {
 					expect(res).to.be.ok;
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
+					expect(res[0].action).to.equal('update');
 					expect(res[0].tableName).to.equal('[CatalogosSistema].[Pais]');
 					done();
 				});
@@ -91,7 +92,94 @@ describe('Persist', function() {
 					expect(res).to.be.ok;
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
+					expect(res[0].action).to.equal('delete');
 					expect(res[0].tableName).to.equal('[CatalogosSistema].[Pais]');
+					done();
+				});
+			});
+		});
+  	
+  });
+
+  describe('Case 2: With identityKey)', function() {
+
+		// ToDo: DDL Isolation Stuff
+	  // before('isolation', function(done) {
+		//  // [persist_prep.sql] CREATE Table(s)
+	  // });
+	  // after(function() {
+	  // 	// [persist_clean.sql] DROP Table(s)
+	  // });
+
+		var identityValue;
+
+		it("should insertRow", function (done) {
+			var insertXML = 
+				'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+					'<insertRow>' + 
+						'<field name="ShortTextField">\'\'Juan\'\'</field>' + 
+						'<field name="IntegerReq">10</field>' + 
+						'<field name="Float">42.3</field>' + 
+					'</insertRow>' + 
+				'</dataTable>';
+
+			panaxdb.persist(insertXML, function (err, xml) {
+				if(err) done(err);
+				expect(xml).to.be.ok;
+				PanaxJS.Util.parseResults(xml, function (err, res) {
+					if(err) done(err);
+					expect(res).to.be.ok;
+					expect(res[0]).to.be.ok;
+					expect(res[0].status).to.equal('success');
+					expect(res[0].action).to.equal('insert');
+					expect(res[0].tableName).to.equal('[dbo].[CONTROLS_Basic]');
+					expect(res[0].identity).to.be.above(0);
+					identityValue = res[0].identity;
+					done();
+				});
+			});
+		});
+
+		it("should updateRow", function (done) {
+			var updateXML = 
+				'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+					'<updateRow identityValue="' + identityValue + '">' + 
+						'<field name="Float">32.4</field>' + 
+					'</updateRow>' + 
+				'</dataTable>';
+
+			panaxdb.persist(updateXML, function (err, xml) {
+				if(err) done(err);
+				expect(xml).to.be.ok;
+				PanaxJS.Util.parseResults(xml, function (err, res) {
+					if(err) done(err);
+					expect(res).to.be.ok;
+					expect(res[0]).to.be.ok;
+					expect(res[0].status).to.equal('success');
+					expect(res[0].action).to.equal('update');
+					expect(res[0].tableName).to.equal('[dbo].[CONTROLS_Basic]');
+					done();
+				});
+			});
+		});
+
+		it("should deleteRow", function (done) {
+			var deleteXML = 
+				'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+					'<deleteRow identityValue="' + identityValue + '">' + 
+					'</deleteRow>' + 
+				'</dataTable>';
+
+			panaxdb.persist(deleteXML, function (err, xml) {
+				if(err) done(err);
+				expect(xml).to.be.ok;
+				PanaxJS.Util.parseResults(xml, function (err, res) {
+					if(err) done(err);
+					expect(res).to.be.ok;
+					expect(res[0]).to.be.ok;
+					expect(res[0].status).to.equal('success');
+					expect(res[0].action).to.equal('delete');
+					expect(res[0].tableName).to.equal('[dbo].[CONTROLS_Basic]');
 					done();
 				});
 			});
