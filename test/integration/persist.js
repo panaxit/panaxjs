@@ -3,7 +3,7 @@ var PanaxJS = require('../..');
 var config = require('../../config/panax');
 var util = require('../../lib/util');
 
-describe.skip('Persist', function() {
+describe('Persist', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined
@@ -45,12 +45,10 @@ describe.skip('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('insert');
-					expect(res[0].tableName.replace(/[\[\]]/g, '')).to.equal('CatalogosSistema.Pais');
-					console.log(res[0].fields[0])
-					expect(res[0].fields[0].value).to.equal('NJ');
+					expect(res[0].tableName).to.equal('[CatalogosSistema].[Pais]');
+					expect(res[0].fields[0].value).to.equal('\'NJ\'');
 					done();
 				});
-				done();
 			});
 		});
 
@@ -71,10 +69,9 @@ describe.skip('Persist', function() {
 					expect(res).to.be.ok;
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
-					expect(res[0].dataTable).to.equal('CatalogosSistema.Pais');
+					expect(res[0].tableName).to.equal('[CatalogosSistema].[Pais]');
 					done();
 				});
-				done();
 			});
 		});
 
@@ -94,10 +91,9 @@ describe.skip('Persist', function() {
 					expect(res).to.be.ok;
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
-					expect(res[0].dataTable).to.equal('CatalogosSistema.Pais');
+					expect(res[0].tableName).to.equal('[CatalogosSistema].[Pais]');
 					done();
 				});
-				done();
 			});
 		});
   	
