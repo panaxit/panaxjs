@@ -4,7 +4,7 @@ var config = require('../../config/panax');
 var util = require('../../lib/util');
 var fs = require('fs');
 
-describe.skip('Persist', function() {
+describe('Persist', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined
@@ -16,10 +16,13 @@ describe.skip('Persist', function() {
 			if(err) return done(err);
 			panaxdb.query(fs.readFileSync('test/mocks.prep.sql', 'utf8'), function(err) {
 				if(err) return done(err);
-				panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
+				panaxdb.rebuildMetadata(function (err) {
 					if(err) return done(err);
-					panaxdb.setParam("userId", userId);
-					done();
+					panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
+						if(err) return done(err);
+						panaxdb.setParam("userId", userId);
+						done();
+					});
 				});
 			});
 		});
@@ -179,7 +182,7 @@ describe.skip('Persist', function() {
   	
   });
 
-  describe.only('Case 3: With primaryKey & identityKey', function() {
+  describe('Case 3: With primaryKey & identityKey', function() {
 
 		var identityValue;
 
@@ -272,7 +275,7 @@ describe.skip('Persist', function() {
 			var insertXML = 
 				'<dataTable name="TestSchema.Empleado" identityKey="Id">' + 
 					'<insertRow>' + 
-						'<field name="RFC" isPK="true">NULL</field>' +
+						'<field name="RFC" isPK="true">\'\'GORU810929\'\'</field>' +
 						'<field name="Nombre">\'\'Uriel\'\'</field>' +
 						'<field name="ApellidoPaterno">\'\'Gómez\'\'</field>' +
 						'<field name="ApellidoMaterno">\'\'Robles\'\'</field>' +

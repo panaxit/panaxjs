@@ -2,36 +2,47 @@ var expect = require('chai').expect;
 var PanaxJS = require('../..');
 var config = require('../../config/panax');
 var util = require('../../lib/util');
+var fs = require('fs');
 
 describe('Read', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined,
-		tableName: 'CatalogosSistema.Pais',
+		tableName: 'TestSchema.Pais',
 		output: 'json'
 	});
 
-  before('authenticate', function(done) {
-		panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
+  before('mock setup & authenticate', function(done) {
+		// DDL Isolation
+		panaxdb.query(fs.readFileSync('test/mocks.clean.sql', 'utf8'), function(err) {
 			if(err) return done(err);
-			panaxdb.setParam("userId", userId);
-			done();
+			panaxdb.query(fs.readFileSync('test/mocks.prep.sql', 'utf8'), function(err) {
+				if(err) return done(err);
+				panaxdb.rebuildMetadata(function (err) {
+					if(err) return done(err);
+					panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
+						if(err) return done(err);
+						panaxdb.setParam("userId", userId);
+						done();
+					});
+				});
+			});
 		});
   });
 
 	// ToDo: DDL Isolation Stuff
   // before('authenticate', function(done) {
-	//  // [read_prep.sql] CREATE Table(s) & INSERT Data
+	//  // [mocks.prep.sql] CREATE Table(s) & INSERT Data
   // });
   // after(function() {
-  // 	// [read_clean.sql] DROP Table(s)
+  // 	// [mocks.clean.sql] DROP Table(s)
   // });
 
   describe('#options', function() {
 
   	it('should return data', function(done) {
 			var args = {
-				catalogName: "CatalogosSistema.Pais",
+				catalogName: "TestSchema.Pais",
 				valueColumn: "Id",
 				textColumn: "Pais"
 			};
