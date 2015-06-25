@@ -91,14 +91,12 @@ Class.prototype.setParam = function(prop, value) {
 
 /**
  * Wrapper for SQL Query:
- * [$Metadata].rebuild
+ * #panax.rebuildMetadata
  */
 Class.prototype.rebuildMetadata = function(callback) {
-	var that = this;
-
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = '[$Metadata].rebuild';
+		var sql_str = '#panax.rebuildMetadata';
 
 		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
@@ -114,18 +112,16 @@ Class.prototype.rebuildMetadata = function(callback) {
 
 /**
  * Wrapper for SQL Queries:
- * [$Table].exportConfig
- * [$Table].config
+ * #entity.config
+ * #entity.exportConfig
  */
 Class.prototype.config = function(args, callback) {
-	var that = this;
-
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = '[$Table].exportConfig';
+		var sql_str = '#entity.exportConfig';
 
 		if(args.length) {
-			sql_str = '[$Table].config ';
+			sql_str = '#entity.config ';
 			sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 		}
 
@@ -143,14 +139,12 @@ Class.prototype.config = function(args, callback) {
 
 /**
  * Wrapper for SQL Query:
- * [$Table].clearConfig
+ * #entity.clearConfig
  */
 Class.prototype.clearConfig = function(args, callback) {
-	var that = this;
-
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = '[$Table].clearConfig ';
+		var sql_str = '#entity.clearConfig ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 
@@ -168,14 +162,12 @@ Class.prototype.clearConfig = function(args, callback) {
 
 /**
  * Wrapper for SQL Query:
- * [$Table].clearCache
+ * #entity.clearCache
  */
 Class.prototype.clearCache = function(args, callback) {
-	var that = this;
-
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = '[$Ver:' + that.config.db.version + '].clearCache ';
+		var sql_str = '#entity.clearCache ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 
@@ -199,8 +191,6 @@ Class.prototype.clearCache = function(args, callback) {
  * Get Vendor Info
  */
 Class.prototype.getVendorInfo = function(callback) {
-	var that = this;
-
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		var sql_str = 'SELECT @@version as version';
@@ -222,11 +212,9 @@ Class.prototype.getVendorInfo = function(callback) {
 
 /**
  * Wrapper for SQL Procedure:
- * [$PanaxDB].Authenticate
+ * #panax.authenticate
  */
 Class.prototype.authenticate = function(username, password, callback) {
-	var that = this;
-
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Security].Authenticate';
@@ -251,14 +239,13 @@ Class.prototype.authenticate = function(username, password, callback) {
 
 /**
  * Wrapper for SQL Query:
- * [$PanaxDB].UserSitemap
+ * #panax.getSitemap
  */
 Class.prototype.getSitemap = function(callback) {
-	var that = this;
-
+	var _self = this;
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = '[$Security].UserSitemap @@userId=' + that.params.userId;
+		var sql_str = '[$Security].UserSitemap @@userId=' + _self.params.userId;
 
 		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
@@ -283,14 +270,14 @@ Class.prototype.getSitemap = function(callback) {
 
 /**
  * Wrapper for SQL Query:
- * [$PanaxDB].getXmlData
+ * #entity.read
  */
 Class.prototype.read = function(callback) {
-	var that = this;
-
+	var _self = this;
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = '[$Ver:' + that.config.db.version + '].getXmlData ' + util.toParamsString(that.params);
+		//var sql_str = '#entity.read ' + util.toParamsString(_self.params);
+		var sql_str = '[$Ver:' + _self.config.db.version + '].getXmlData ' + util.toParamsString(_self.params);
 
 		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
@@ -311,14 +298,13 @@ Class.prototype.read = function(callback) {
 
 /**
  * Wrapper for SQL Query:
- * [$Table].getCatalogOptions
+ * #entity.options
  */
 Class.prototype.options = function(args, callback) {
-	var that = this;
-
+	var _self = this;
 	this.sql_conn.then(function(conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = '[$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
+		var sql_str = '[$Table].getCatalogOptions @@userId=' + _self.params.userId + ", @catalogName='" + args.catalogName + "', " +
 									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
 
 		if(args.filters)
@@ -350,11 +336,10 @@ Class.prototype.options = function(args, callback) {
  * #panax.persist
  */
 Class.prototype.persist = function(xml, callback) {
-	var that = this;
-
+	var _self = this;
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = "#panax.persist @userId=" + that.params.userId + ", @updateXML='" + xml + "'";
+		var sql_str = "#panax.persist @userId=" + _self.params.userId + ", @updateXML='" + xml + "'";
 
 		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);

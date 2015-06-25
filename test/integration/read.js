@@ -27,7 +27,7 @@ describe('Read', function() {
   // 	// [read_clean.sql] DROP Table(s)
   // });
 
-  describe('#getCatalogOptions()', function() {
+  describe('#options', function() {
 
   	it('should return data', function(done) {
 			var args = {
@@ -45,7 +45,7 @@ describe('Read', function() {
 
   });
 
-  describe('#getXML()', function() {
+  describe('#read', function() {
 
   	it('should return data', function(done) {
 			panaxdb.read(function (err, res) {
