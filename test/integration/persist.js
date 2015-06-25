@@ -2,34 +2,34 @@ var expect = require('chai').expect;
 var PanaxJS = require('../..');
 var config = require('../../config/panax');
 var util = require('../../lib/util');
+var fs = require('fs');
 
-describe('Persist', function() {
+describe.skip('Persist', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined
 	});
 
-  before('authenticate', function(done) {
-		panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
+  before('mock setup & authenticate', function(done) {
+		// DDL Isolation
+		panaxdb.query(fs.readFileSync('test/mocks.clean.sql', 'utf8'), function(err) {
 			if(err) return done(err);
-			panaxdb.setParam("userId", userId);
-			done();
+			panaxdb.query(fs.readFileSync('test/mocks.prep.sql', 'utf8'), function(err) {
+				if(err) return done(err);
+				panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
+					if(err) return done(err);
+					panaxdb.setParam("userId", userId);
+					done();
+				});
+			});
 		});
   });
 
-  describe('Case 1: With primaryKey)', function() {
-
-		// ToDo: DDL Isolation Stuff
-	  // before('isolation', function(done) {
-		//  // [persist_prep.sql] CREATE Table(s)
-	  // });
-	  // after(function() {
-	  // 	// [persist_clean.sql] DROP Table(s)
-	  // });
+  describe('Case 1: With primaryKey', function() {
 
 		it("should insertRow", function (done) {
 			var insertXML = 
-				'<dataTable name="CatalogosSistema.Pais">' + 
+				'<dataTable name="TestSchema.Pais">' + 
 					'<insertRow>' + 
 						'<field name="Id" isPK="true">\'\'NJ\'\'</field>' + 
 						'<field name="Pais">\'\'Nunca Jamas\'\'</field>' + 
@@ -45,7 +45,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('insert');
-					expect(res[0].tableName).to.equal('[CatalogosSistema].[Pais]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Pais]');
 					expect(res[0].fields[0].value).to.equal('\'NJ\'');
 					done();
 				});
@@ -54,7 +54,7 @@ describe('Persist', function() {
 
 		it("should updateRow", function (done) {
 			var updateXML = 
-				'<dataTable name="CatalogosSistema.Pais">' + 
+				'<dataTable name="TestSchema.Pais">' + 
 					'<updateRow>' + 
 						'<field name="Id" isPK="true" currentValue="\'\'NJ\'\'">\'\'NE\'\'</field>' + 
 						'<field name="Pais">\'\'Nueva Escocia\'\'</field>' + 
@@ -70,7 +70,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('update');
-					expect(res[0].tableName).to.equal('[CatalogosSistema].[Pais]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Pais]');
 					done();
 				});
 			});
@@ -78,7 +78,7 @@ describe('Persist', function() {
 
 		it("should deleteRow", function (done) {
 			var deleteXML = 
-				'<dataTable name="CatalogosSistema.Pais">' + 
+				'<dataTable name="TestSchema.Pais">' + 
 					'<deleteRow>' + 
 						'<field name="Id" isPK="true">\'\'NE\'\'</field>' + 
 					'</deleteRow>' + 
@@ -93,7 +93,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('delete');
-					expect(res[0].tableName).to.equal('[CatalogosSistema].[Pais]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Pais]');
 					done();
 				});
 			});
@@ -101,21 +101,13 @@ describe('Persist', function() {
   	
   });
 
-  describe('Case 2: With identityKey)', function() {
-
-		// ToDo: DDL Isolation Stuff
-	  // before('isolation', function(done) {
-		//  // [persist_prep.sql] CREATE Table(s)
-	  // });
-	  // after(function() {
-	  // 	// [persist_clean.sql] DROP Table(s)
-	  // });
+  describe('Case 2: With identityKey', function() {
 
 		var identityValue;
 
 		it("should insertRow", function (done) {
 			var insertXML = 
-				'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+				'<dataTable name="TestSchema.CONTROLS_Basic" identityKey="Id">' + 
 					'<insertRow>' + 
 						'<field name="ShortTextField">\'\'Juan\'\'</field>' + 
 						'<field name="IntegerReq">10</field>' + 
@@ -132,7 +124,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('insert');
-					expect(res[0].tableName).to.equal('[dbo].[CONTROLS_Basic]');
+					expect(res[0].tableName).to.equal('[TestSchema].[CONTROLS_Basic]');
 					expect(res[0].identity).to.be.above(0);
 					identityValue = res[0].identity;
 					done();
@@ -142,7 +134,7 @@ describe('Persist', function() {
 
 		it("should updateRow", function (done) {
 			var updateXML = 
-				'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+				'<dataTable name="TestSchema.CONTROLS_Basic" identityKey="Id">' + 
 					'<updateRow identityValue="' + identityValue + '">' + 
 						'<field name="Float">32.4</field>' + 
 					'</updateRow>' + 
@@ -157,7 +149,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('update');
-					expect(res[0].tableName).to.equal('[dbo].[CONTROLS_Basic]');
+					expect(res[0].tableName).to.equal('[TestSchema].[CONTROLS_Basic]');
 					done();
 				});
 			});
@@ -165,7 +157,7 @@ describe('Persist', function() {
 
 		it("should deleteRow", function (done) {
 			var deleteXML = 
-				'<dataTable name="dbo.CONTROLS_Basic" identityKey="Id">' + 
+				'<dataTable name="TestSchema.CONTROLS_Basic" identityKey="Id">' + 
 					'<deleteRow identityValue="' + identityValue + '">' + 
 					'</deleteRow>' + 
 				'</dataTable>';
@@ -179,7 +171,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('delete');
-					expect(res[0].tableName).to.equal('[dbo].[CONTROLS_Basic]');
+					expect(res[0].tableName).to.equal('[TestSchema].[CONTROLS_Basic]');
 					done();
 				});
 			});
@@ -187,21 +179,13 @@ describe('Persist', function() {
   	
   });
 
-  describe('Case 3: With primaryKey & identityKey)', function() {
-
-		// ToDo: DDL Isolation Stuff
-	  // before('isolation', function(done) {
-		//  // [persist_prep.sql] CREATE Table(s)
-	  // });
-	  // after(function() {
-	  // 	// [persist_clean.sql] DROP Table(s)
-	  // });
+  describe.only('Case 3: With primaryKey & identityKey', function() {
 
 		var identityValue;
 
 		it("should insertRow", function (done) {
 			var insertXML = 
-				'<dataTable name="dbo.Empleado" identityKey="Id">' + 
+				'<dataTable name="TestSchema.Empleado" identityKey="Id">' + 
 					'<insertRow>' + 
 						'<field name="RFC" isPK="true">\'\'GORU810929\'\'</field>' +
 						'<field name="Nombre">\'\'Uriel\'\'</field>' +
@@ -221,7 +205,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('insert');
-					expect(res[0].tableName).to.equal('[dbo].[Empleado]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Empleado]');
 					expect(res[0].identity).to.be.above(0);
 					identityValue = res[0].identity;
 					done();
@@ -231,7 +215,7 @@ describe('Persist', function() {
 
 		it("should updateRow", function (done) {
 			var updateXML = 
-				'<dataTable name="dbo.Empleado" identityKey="Id">' + 
+				'<dataTable name="TestSchema.Empleado" identityKey="Id">' + 
 					//'<updateRow identityValue="' + identityValue + '">' + 
 					'<updateRow>' + 
 						'<field name="RFC" isPK="true" currentValue="\'\'GORU810929\'\'">\'\'GORU8109293T0\'\'</field>' + 
@@ -248,7 +232,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('update');
-					expect(res[0].tableName).to.equal('[dbo].[Empleado]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Empleado]');
 					done();
 				});
 			});
@@ -256,7 +240,7 @@ describe('Persist', function() {
 
 		it("should deleteRow", function (done) {
 			var deleteXML = 
-				'<dataTable name="dbo.Empleado" identityKey="Id">' + 
+				'<dataTable name="TestSchema.Empleado" identityKey="Id">' + 
 					//'<deleteRow identityValue="' + identityValue + '">' + 
 					'<deleteRow>' + 
 						'<field name="RFC" isPK="true">\'\'GORU8109293T0\'\'</field>' + 
@@ -272,7 +256,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('delete');
-					expect(res[0].tableName).to.equal('[dbo].[Empleado]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Empleado]');
 					done();
 				});
 			});
@@ -280,34 +264,26 @@ describe('Persist', function() {
   	
   });
 
-  describe('Case 4: Nested)', function() {
-
-		// ToDo: DDL Isolation Stuff
-	  // before('isolation', function(done) {
-		//  // [persist_prep.sql] CREATE Table(s)
-	  // });
-	  // after(function() {
-	  // 	// [persist_clean.sql] DROP Table(s)
-	  // });
+  describe('Case 4: Nested', function() {
 
 		var identityValue;
 
 		it("should insertRow", function (done) {
 			var insertXML = 
-				'<dataTable name="dbo.Empleado" identityKey="Id">' + 
+				'<dataTable name="TestSchema.Empleado" identityKey="Id">' + 
 					'<insertRow>' + 
 						'<field name="RFC" isPK="true">NULL</field>' +
 						'<field name="Nombre">\'\'Uriel\'\'</field>' +
 						'<field name="ApellidoPaterno">\'\'Gómez\'\'</field>' +
 						'<field name="ApellidoMaterno">\'\'Robles\'\'</field>' +
 						'<field name="FechaNacimiento" out="true">NULL</field>' +
-						'<dataTable name="dbo.Domicilio">' +
+						'<dataTable name="TestSchema.Domicilio">' +
 							'<insertRow>' +
 								'<fkey name="RFC" isPK="true" maps="RFC" />' +
 								'<field name="Dirección" out="true">\'\'Primer domicilio\'\'</field>' +
 							'</insertRow>' +
 						'</dataTable>' +
-						'<dataTable name="dbo.Telefonos">' +
+						'<dataTable name="TestSchema.Telefonos">' +
 							'<insertRow>' +
 								'<fkey name="Sede" maps="Sede" />' +
 								'<fkey name="Empleado" maps="RFC" />' +
@@ -331,7 +307,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('insert');
-					expect(res[0].tableName).to.equal('[dbo].[Empleado]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Empleado]');
 					expect(res[0].identity).to.be.above(0);
 					identityValue = res[0].identity;
 					done();
@@ -341,10 +317,10 @@ describe('Persist', function() {
 
 		it("should updateRow", function (done) {
 			var updateXML = 
-				'<dataTable name="dbo.Empleado" identityKey="Id">' + 
+				'<dataTable name="TestSchema.Empleado" identityKey="Id">' + 
 					'<updateRow>' + 
 						'<field name="RFC" isPK="true">\'\'GORU810929\'\'</field>' +
-						'<dataTable name="dbo.Domicilio" identityKey="Id">' +
+						'<dataTable name="TestSchema.Domicilio" identityKey="Id">' +
 							'<updateRow>' +
 								'<fkey name="RFC" isPK="true" maps="RFC" />' +
 								'<field name="Dirección">\'\'Domicilio actualizado\'\'</field>' +
@@ -362,7 +338,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('update');
-					expect(res[0].tableName).to.equal('[dbo].[Empleado]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Empleado]');
 					done();
 				});
 			});
@@ -370,7 +346,7 @@ describe('Persist', function() {
 
 		it("should deleteRow", function (done) {
 			var deleteXML = 
-				'<dataTable name="dbo.Empleado" identityKey="Id">' + 
+				'<dataTable name="TestSchema.Empleado" identityKey="Id">' + 
 					'<deleteRow identityValue="' + identityValue + '">' + 
 					'</deleteRow>' + 
 				'</dataTable>';
@@ -384,7 +360,7 @@ describe('Persist', function() {
 					expect(res[0]).to.be.ok;
 					expect(res[0].status).to.equal('success');
 					expect(res[0].action).to.equal('delete');
-					expect(res[0].tableName).to.equal('[dbo].[Empleado]');
+					expect(res[0].tableName).to.equal('[TestSchema].[Empleado]');
 					done();
 				});
 			});

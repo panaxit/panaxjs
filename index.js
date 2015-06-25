@@ -10,9 +10,6 @@
  */
 var sql = require('mssql');
 var Promise = require('i-promise');
-var path = require('path');
-var fs = require('fs');
-var mkdirp = require('mkdirp');
 var util = require('./lib/util');
 
 // ToDo
@@ -35,8 +32,12 @@ var util = require('./lib/util');
 // @orderBy
 // @enableInsert
 
+/**********************
+ * Class
+ **********************/
+
 /**
- * Class Constructor
+ * Constructor
  */
 var Class = function(config, params) {
 	
@@ -84,6 +85,28 @@ Class.prototype.setParam = function(prop, value) {
 		this.params[prop] = value;
 	}
 };
+
+/**********************
+ * SQL Methods
+ **********************/
+
+/**
+ * Run raw SQL query
+ */
+Class.prototype.query = function(sql_str, callback) {
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
+		sql_str = sql_str.replace(/^GO.*$/mg, '/**GO**/'); // Remove GO statements
+		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		sql_req.query(sql_str).then(function (recordset) {
+			callback(null, recordset);
+		}).catch(function (err) {
+			callback(err);
+		});
+	}).catch(function (err) {
+		callback(err);
+	});
+}
 
 /**********************
  * Config Methods
