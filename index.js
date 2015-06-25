@@ -9,10 +9,10 @@
  * 
  */
 var sql = require('mssql');
-var libxmljs = require('libxslt').libxmljs;
 var path = require('path');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
+var util = require('./lib/util');
 
 // ToDo
 // @Parameters (Unknown)
@@ -35,7 +35,7 @@ var mkdirp = require('mkdirp');
 // @enableInsert
 
 /**
- * Constructor
+ * Class Constructor
  */
 var Class = function(config, params) {
 	
@@ -66,10 +66,6 @@ var Class = function(config, params) {
 	}
 };
 
-/**********************
- * Utility Methods
- **********************/
-
 /**
  * Property setter
  */
@@ -77,119 +73,6 @@ Class.prototype.setParam = function(prop, value) {
 	if (this.params.hasOwnProperty(prop)) {
 		this.params[prop] = value;
 	}
-};
-
-/**
- * To Array
- */
-Class.prototype.toParamsArray = function(params) {
-	var result = [];
-	var prefix = '@';
-	var value = '';
-
-	for (var prop in params) {
-		prefix = (prop !== 'userId') ? '@' : '@@';
-		value = params[prop];
-	
-		if(prop === 'tableName' || prop === 'mode')
-			if(value !== 'DEFAULT')
-				value = '\'' + params[prop] + '\'';
-
-		result.push(prefix + prop + '=' + value);
-	}
-
-	return result;
-};
-
-/**
- * To String
- */
-Class.prototype.toParamsString = function(params) {
-	return this.toParamsArray(params).join(', ');
-};
-
-// ToDo: Rename to Parse Catalog (parseCatalog)
-/**
- * Get Catalog object from XML (from getXMLData)
- */
-Class.prototype.getCatalog = function(xml, callback) {
-	var xmlDoc = libxmljs.parseXml(xml); // Sync func
-
-	if(!xmlDoc)
-		return callback({message: "Error: Parsing XML"});
-
-	var catalog = {
-		dbId: xmlDoc.root().attr("dbId").value(),
-		lang: xmlDoc.root().attr("lang").value(),
-		Table_Schema: xmlDoc.root().attr("Table_Schema").value(),
-		Table_Name: xmlDoc.root().attr("Table_Name").value(),
-		mode: xmlDoc.root().attr("mode").value(),
-		controlType: xmlDoc.root().attr("controlType").value()
-	};
-
-	var fileTemplate = xmlDoc.root().attr("fileTemplate");
-	if(fileTemplate)
-		catalog.fileTemplate = fileTemplate.value();
-
-	callback(null, catalog);
-};
-
-/**
- * Get Filename Location from Catalog
- */
-Class.prototype.getFilename = function(catalog, callback) {
-	var sLocation = path.join(
-		this.config.ui.guis[this.params.output].cache,
-		catalog.dbId,
-		catalog.lang,
-		catalog.Table_Schema,
-		catalog.Table_Name,
-		catalog.mode
-	);
-
-	var sFileName = path.join(sLocation, catalog.controlType + '.js');
-
-	// ToDo: Use fs.Async functions?
-	if(fs.existsSync(sFileName) && this.params.rebuild !== '1') {
-		//console.info('# PanaxJS - Existing file: ' + sFileName);
-		callback(null, true, sFileName);
-	} else {
-		if(fs.existsSync(sFileName)) {
-			fs.unlinkSync(sFileName);
-			//console.info('# PanaxJS - Deleted file: ' + sFileName);
-		}
-		if(!fs.existsSync(sLocation)) {
-			mkdirp(sLocation);
-			//console.info('# PanaxJS - Mkdirp folder: ' + sLocation);
-		}
-
-		//console.info('# PanaxJS - Missing file: ' + sFileName);
-		callback(null, false, sFileName);
-	}
-};
-
-// ToDo: Rename to Parse Results (parseResults)
-/**
- * Get Results object from XML (from persist)
- */
-Class.prototype.getResults = function(xml, callback) {
-	var xmlDoc = libxmljs.parseXml(xml); // Sync func
-
-	if(!xmlDoc)
-		return callback({message: "Error: Parsing XML"});
-
-	var results = [];
-
-	xmlDoc.root().childNodes().forEach(function (child) {
-		var res = {};
-		var attrs = child.attrs();
-		for(var i=0;i<attrs.length;i++) {
-			res[attrs[i].name()] = attrs[i].value();
-		}
-		results.push(res);
-	});
-
-	callback(null, results);
 };
 
 /**********************
@@ -405,7 +288,7 @@ Class.prototype.read = function(callback) {
 
 	sql_conn.connect().then(function () {
 		var sql_req = new sql.Request(sql_conn);
-		var sql_str = '[$Ver:' + that.config.db.version + '].getXmlData ' + that.toParamsString(that.params);
+		var sql_str = '[$Ver:' + that.config.db.version + '].getXmlData ' + util.toParamsString(that.params);
 
 		sql_req.query(sql_str).then(function (recordset) {
 			//console.info('# PanaxJS - sql_str: ' + sql_str);
@@ -494,4 +377,5 @@ Class.prototype.persist = function(xml, callback) {
  * Module Export
  **********************/
 
-module.exports = Class;
+module.exports.Connection = Class;
+module.exports.Util = util;

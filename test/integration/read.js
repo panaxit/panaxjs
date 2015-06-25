@@ -5,27 +5,27 @@ var util = require('../../lib/util');
 
 describe('Read', function() {
 
-	var panaxdb = new PanaxJS(config, {
+	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined,
 		tableName: 'CatalogosSistema.Pais',
 		output: 'json'
 	});
 
-	/*
-	ToDo: DDL Isolation Stuff
-	 */
-  before(function(done) {
+  before('authenticate', function(done) {
 		panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
 			if(err) return done(err);
 			panaxdb.setParam("userId", userId);
 			done();
 		});
-  // CREATE Table(s)
-  // INSERT Data
   });
-  after(function() {
-  // DROP Table(s)
-  });
+
+	// ToDo: DDL Isolation Stuff
+  // before('authenticate', function(done) {
+	//  // [read_prep.sql] CREATE Table(s) & INSERT Data
+  // });
+  // after(function() {
+  // 	// [read_clean.sql] DROP Table(s)
+  // });
 
   describe('#getCatalogOptions()', function() {
 
