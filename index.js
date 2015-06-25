@@ -9,6 +9,7 @@
  * 
  */
 var sql = require('mssql');
+var Promise = require('i-promise');
 var path = require('path');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
@@ -64,6 +65,15 @@ var Class = function(config, params) {
 			lang: params.lang || 'DEFAULT'
 		};
 	}
+
+	this.sql_conn = new Promise(function (resolve, reject) {
+		var conn = new sql.Connection(config.db, function (err) {
+			if(err) {
+				return reject(err);
+			}
+			return resolve(conn);
+		});
+	});
 };
 
 /**
@@ -85,10 +95,9 @@ Class.prototype.setParam = function(prop, value) {
  */
 Class.prototype.rebuildMetadata = function(callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Metadata].rebuild';
 
 		sql_req.query(sql_str).then(function (recordset) {
@@ -110,10 +119,9 @@ Class.prototype.rebuildMetadata = function(callback) {
  */
 Class.prototype.config = function(args, callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Table].exportConfig';
 
 		if(args.length) {
@@ -139,10 +147,9 @@ Class.prototype.config = function(args, callback) {
  */
 Class.prototype.clearConfig = function(args, callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Table].clearConfig ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
@@ -165,10 +172,9 @@ Class.prototype.clearConfig = function(args, callback) {
  */
 Class.prototype.clearCache = function(args, callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Ver:' + that.config.db.version + '].clearCache ';
 
 		sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
@@ -194,10 +200,9 @@ Class.prototype.clearCache = function(args, callback) {
  */
 Class.prototype.getVendorInfo = function(callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = 'SELECT @@version as version';
 
 		sql_req.query(sql_str).then(function (recordset) {
@@ -221,10 +226,9 @@ Class.prototype.getVendorInfo = function(callback) {
  */
 Class.prototype.authenticate = function(username, password, callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Security].Authenticate';
 
 		sql_req.input('username', sql.VarChar, username);
@@ -251,10 +255,9 @@ Class.prototype.authenticate = function(username, password, callback) {
  */
 Class.prototype.getSitemap = function(callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Security].UserSitemap @@userId=' + that.params.userId;
 
 		sql_req.query(sql_str).then(function (recordset) {
@@ -284,10 +287,9 @@ Class.prototype.getSitemap = function(callback) {
  */
 Class.prototype.read = function(callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Ver:' + that.config.db.version + '].getXmlData ' + util.toParamsString(that.params);
 
 		sql_req.query(sql_str).then(function (recordset) {
@@ -313,10 +315,9 @@ Class.prototype.read = function(callback) {
  */
 Class.prototype.options = function(args, callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function() {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function(conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Table].getCatalogOptions @@userId=' + that.params.userId + ", @catalogName='" + args.catalogName + "', " +
 									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
 
@@ -350,10 +351,9 @@ Class.prototype.options = function(args, callback) {
  */
 Class.prototype.persist = function(xml, callback) {
 	var that = this;
-	var sql_conn = new sql.Connection(that.config.db);
 
-	sql_conn.connect().then(function () {
-		var sql_req = new sql.Request(sql_conn);
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
 		var sql_str = "#panax.persist @userId=" + that.params.userId + ", @updateXML='" + xml + "'";
 
 		sql_req.query(sql_str).then(function (recordset) {
