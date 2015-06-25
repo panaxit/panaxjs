@@ -87,7 +87,7 @@ Class.prototype.setParam = function(prop, value) {
 };
 
 /**********************
- * SQL Methods
+ * Config Methods
  **********************/
 
 /**
@@ -107,10 +107,6 @@ Class.prototype.query = function(sql_str, callback) {
 		callback(err);
 	});
 }
-
-/**********************
- * Config Methods
- **********************/
 
 /**
  * Wrapper for SQL Query:

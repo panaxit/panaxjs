@@ -25,6 +25,13 @@ describe('Config', function() {
   // DROP Table(s)
   });
 
+  // ToDo: #query Tests
+  describe('#query', function() {
+
+  	it('should run');
+
+  });
+
   // ToDo: #rebuildMetadata Tests
   describe('#rebuildMetadata', function() {
 
