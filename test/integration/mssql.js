@@ -4,7 +4,7 @@ var Promise = require('i-promise');
 var config = require('../../config/panax');
 var util = require('../../lib/util');
 
-describe('MSSQL', function() {
+describe('mssql driver', function() {
 
 	var db = new Promise(function (resolve, reject) {
 		var conn = new sql.Connection(config.db, function (err) {

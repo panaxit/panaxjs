@@ -3,7 +3,7 @@ var PanaxJS = require('../..');
 var config = require('../../config/panax');
 var util = require('../../lib/util');
 
-describe('Config', function() {
+describe('config', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined
@@ -25,7 +25,7 @@ describe('Config', function() {
   // DROP Table(s)
   });
 
-  // ToDo: #query Tests
+  // ToDo: #query Tests 
   describe('#query', function() {
 
   	it('should run');

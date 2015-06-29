@@ -4,7 +4,7 @@ var config = require('../../config/panax');
 var util = require('../../lib/util');
 var fs = require('fs');
 
-describe('Read', function() {
+describe('read', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined,

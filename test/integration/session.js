@@ -3,7 +3,7 @@ var PanaxJS = require('../..');
 var config = require('../../config/panax');
 var util = require('../../lib/util');
 
-describe('Session', function() {
+describe('session', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined

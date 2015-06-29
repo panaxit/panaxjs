@@ -4,7 +4,7 @@ var config = require('../../config/panax');
 var util = require('../../lib/util');
 var fs = require('fs');
 
-describe('Persist', function() {
+describe('persistance (create, update, delete)', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
 		userId: undefined
@@ -28,7 +28,7 @@ describe('Persist', function() {
 		});
   });
 
-  describe('Case 1: With primaryKey', function() {
+  describe('case 1: #persist with primaryKey', function() {
 
 		it("should insertRow", function (done) {
 			var insertXML = 
@@ -104,7 +104,7 @@ describe('Persist', function() {
   	
   });
 
-  describe('Case 2: With identityKey', function() {
+  describe('case 2: #persist with identityKey', function() {
 
 		var identityValue;
 
@@ -182,7 +182,7 @@ describe('Persist', function() {
   	
   });
 
-  describe('Case 3: With primaryKey & identityKey', function() {
+  describe('case 3: #persist with primaryKey & identityKey', function() {
 
 		var identityValue;
 
@@ -267,7 +267,7 @@ describe('Persist', function() {
   	
   });
 
-  describe('Case 4: Nested', function() {
+  describe('case 4: #persist nested (1:1, 1:N)', function() {
 
 		var identityValue;
 
