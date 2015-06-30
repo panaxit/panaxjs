@@ -5,9 +5,7 @@ var util = require('../../lib/util');
 
 describe('session', function() {
 
-	var panaxdb = new PanaxJS.Connection(config, {
-		userId: undefined
-	});
+	var panaxdb = new PanaxJS.Connection(config);
 
 	it('should not #getSitemap when not authenticated', function(done) {
 		panaxdb.getSitemap(function (err, res) {

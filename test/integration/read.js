@@ -7,7 +7,6 @@ var fs = require('fs');
 describe('read', function() {
 
 	var panaxdb = new PanaxJS.Connection(config, {
-		userId: undefined,
 		tableName: 'TestSchema.Pais',
 		output: 'json'
 	});

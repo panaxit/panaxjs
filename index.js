@@ -52,7 +52,9 @@ var Class = function(config, params) {
 	this.config = config;
 
 	if(!params) {
-		this.params = {};
+		this.params = {
+			userId: undefined,
+		};
 	} else {
 		this.params = {
 			userId: params.userId,

@@ -5,9 +5,7 @@ var util = require('../../lib/util');
 
 describe('config', function() {
 
-	var panaxdb = new PanaxJS.Connection(config, {
-		userId: undefined
-	});
+	var panaxdb = new PanaxJS.Connection(config);
 
 	/*
 	ToDo: DDL Isolation Stuff

@@ -6,9 +6,7 @@ var fs = require('fs');
 
 describe('persistance (create, update, delete)', function() {
 
-	var panaxdb = new PanaxJS.Connection(config, {
-		userId: undefined
-	});
+	var panaxdb = new PanaxJS.Connection(config);
 
   before('mock setup & authenticate', function(done) {
 		// DDL Isolation
