@@ -32,6 +32,11 @@ var util = require('./lib/util');
 // @orderBy
 // @enableInsert
 
+var noop = {
+	info: function () {}
+};
+var debug = ( process.env.NODE_ENV === 'development' ) ? console : noop;
+
 /**********************
  * Class
  **********************/
@@ -97,7 +102,7 @@ Class.prototype.query = function(sql_str, callback) {
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		sql_str = sql_str.replace(/^GO.*$/mg, '/**GO**/'); // Remove GO statements
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			callback(null, recordset);
 		}).catch(function (err) {
@@ -116,7 +121,7 @@ Class.prototype.rebuildMetadata = function(callback) {
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		var sql_str = '#panax.rebuildMetadata';
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			callback(null, recordset);
 		}).catch(function (err) {
@@ -140,7 +145,7 @@ Class.prototype.config = function(args, callback) {
 			sql_str = '#entity.config ';
 			sql_str += args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
 		}
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			callback(null, recordset);
 		}).catch(function (err) {
@@ -159,7 +164,7 @@ Class.prototype.clearConfig = function(args, callback) {
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		var sql_str = '#entity.clearConfig ' + args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			callback(null, recordset);
 		}).catch(function (err) {
@@ -178,7 +183,7 @@ Class.prototype.clearCache = function(args, callback) {
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		var sql_str = '#entity.clearCache ' + args.map(function(arg) {return '\''+arg+'\'';}).join(', ');
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			callback(null, recordset);
 		}).catch(function (err) {
@@ -200,7 +205,7 @@ Class.prototype.getVendorInfo = function(callback) {
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		var sql_str = 'SELECT @@version as version';
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			if(!recordset[0])
 				return callback({message: "Error: Missing Vendor Info"});
@@ -223,7 +228,7 @@ Class.prototype.authenticate = function(username, password, callback) {
 		var sql_str = '[$Security].Authenticate';
 		sql_req.input('username', sql.VarChar, username);
 		sql_req.input('password', sql.VarChar, password);
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.execute(sql_str).then(function (recordsets, returnValue) {
 			var userId = recordsets[0][0].userId;
 			//ToDo: oCn.execute "IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.ROUTINES IST WHERE routine_schema IN ('$Application') AND ROUTINE_NAME IN ('OnStartUp')) BEGIN EXEC [$Application].OnStartUp END"
@@ -245,7 +250,7 @@ Class.prototype.getSitemap = function(callback) {
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		var sql_str = '[$Security].UserSitemap @@userId=' + _self.params.userId;
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			var xml = recordset[0]['userSiteMap'];
 			if(!xml)
@@ -273,7 +278,7 @@ Class.prototype.read = function(callback) {
 		var sql_req = new sql.Request(conn);
 		//var sql_str = '#entity.read ' + util.toParamsString(_self.params);
 		var sql_str = '[$Ver:' + _self.config.db.version + '].getXmlData ' + util.toParamsString(_self.params);
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			var xml = recordset[0][''];
 			if(!xml)
@@ -299,7 +304,7 @@ Class.prototype.options = function(args, callback) {
 									"@valueColumn='" + args.valueColumn + "', @textColumn='" + args.textColumn + "'";
 		if(args.filters)
 			sql_str = sql_str + ", @filters=" + args.filters + "";
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			var xml = recordset[0][''];
 			if(!xml)
@@ -326,7 +331,7 @@ Class.prototype.persist = function(xml, callback) {
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
 		var sql_str = "#panax.persist @userId=" + _self.params.userId + ", @updateXML='" + xml + "'";
-		//console.info('# PanaxJS - sql_str: ' + sql_str);
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			var xml = recordset[0][''];
 			if(!xml)
