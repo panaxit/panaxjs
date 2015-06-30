@@ -32,10 +32,13 @@ var util = require('./lib/util');
 // @orderBy
 // @enableInsert
 
-var noop = {
-	info: function () {}
+var chalk = require('chalk');
+var noop = function () {};
+var debug = ( process.env.NODE_ENV === 'development' ) ? {
+	info: function(str) { console.log(chalk.bold.blue(str)); }
+} : {
+	info: noop
 };
-var debug = ( process.env.NODE_ENV === 'development' ) ? console : noop;
 
 /**********************
  * Class
