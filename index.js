@@ -204,12 +204,12 @@ Class.prototype.clearCache = function(args, callback) {
  **********************/
 
 /**
- * Get Vendor Info
+ * Get db Info
  */
-Class.prototype.getVendorInfo = function(callback) {
+Class.prototype.getInfo = function(callback) {
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = 'SELECT @@version as version';
+		var sql_str = 'SELECT @@version as vendor_ver, #database.getConfig(\'px:version\') AS panaxdb_ver';
 		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			if(!recordset[0])

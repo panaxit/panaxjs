@@ -15,8 +15,8 @@ describe('session', function() {
 		});
 	});
 
-	it('should #getVendorInfo without being aunthenticated', function(done) {
-		panaxdb.getVendorInfo(function (err, res) {
+	it('should #getInfo without being aunthenticated', function(done) {
+		panaxdb.getInfo(function (err, res) {
 			if(err) return done(err);
 			expect(res).to.be.ok;
 			done();
