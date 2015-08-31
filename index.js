@@ -351,6 +351,33 @@ Class.prototype.persist = function(xml, callback) {
 };
 
 /**********************
+ * Tools Methods
+ **********************/
+
+/**
+ * Wrapper for SQL Query:
+ * #panax.filters
+ */
+Class.prototype.filters = function(xml, callback) {
+	var _self = this;
+	this.sql_conn.then(function (conn) {
+		var sql_req = new sql.Request(conn);
+		var sql_str = "SELECT filters=[$Tools].getFilterString('" + xml + "')";
+		debug.info('# PanaxJS - sql_str: ' + sql_str);
+		sql_req.query(sql_str).then(function (recordset) {
+			var filters = recordset[0]['filters'];
+			if(!filters)
+				return callback({message: "Error: Missing Filters Data"});
+			callback(null, filters);
+		}).catch(function (err) {
+			callback(err);
+		});
+	}).catch(function (err) {
+		callback(err);
+	});
+};
+
+/**********************
  * Module Export
  **********************/
 

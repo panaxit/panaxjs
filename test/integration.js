@@ -1,4 +1,4 @@
-describe('Without mocks', function() {
+describe('Integration tests: Without mocks', function() {
 
 	require('./integration/mssql');
 	require('./integration/config');
@@ -6,7 +6,7 @@ describe('Without mocks', function() {
 
 });
 
-describe('Using mocks', function() {
+describe('Integration tests: Using mocks', function() {
 
 	var fs = require('fs');
 	var PanaxJS = require('..');
@@ -22,11 +22,7 @@ describe('Using mocks', function() {
 				if(err) return done(err);
 				panaxdb.rebuildMetadata(function (err) {
 					if(err) return done(err);
-					panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
-						if(err) return done(err);
-						panaxdb.setParam("userId", userId);
-						done();
-					});
+					done();
 				});
 			});
 		});
