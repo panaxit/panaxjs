@@ -29,14 +29,6 @@ describe('read', function() {
 		});
   });
 
-	// ToDo: DDL Isolation Stuff
-  // before('authenticate', function(done) {
-	//  // [mocks.prep.sql] CREATE Table(s) & INSERT Data
-  // });
-  // after(function() {
-  // 	// [mocks.clean.sql] DROP Table(s)
-  // });
-
   describe('#options', function() {
 
   	it('should return data', function(done) {
