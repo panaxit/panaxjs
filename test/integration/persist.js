@@ -169,7 +169,7 @@ describe('persistance (create, update, delete)', function() {
   	
   });
 
-  describe('case 3: #persist with primaryKey & identityKey', function() {
+  describe('case 3: #persist with (distinct) primaryKey & identityKey', function() {
 
 		var identityValue;
 
@@ -254,7 +254,7 @@ describe('persistance (create, update, delete)', function() {
   	
   });
 
-  describe('case 4: #persist nested (1:1, 1:N)', function() {
+  describe('case 4: #persist nested (1:1, 1:N) with (distinct) primaryKey & identityKey', function() {
 
 		var identityValue;
 
@@ -357,5 +357,92 @@ describe('persistance (create, update, delete)', function() {
 		});
   	
   });
+
+	describe.skip('case 5: #persist nested (1:1, 1:N) with (same) primaryKey & identityKey', function() {
+
+		var identityValue;
+		
+		it("should insertRow", function (done) {
+			var insertXML = 
+				'<dataTable name="TestSchema.CONTROLS_NestedForm" identityKey="Id">' + 
+					'<insertRow>' + 
+						'<field name="TextLimit10Chars">\'\'Test PARENT\'\'</field>' +
+						'<dataTable name="dbo.CONTROLS_NestedGrid" identityKey="Id">' +
+							'<insertRow>' + 
+								'<fkey name="Id" isPK="true" maps="Id"/>' +
+								'<field name="TextLimit255">\'\'Test CHILD\'\'</field>' +
+							'</insertRow>' + 
+						'</dataTable>' + 
+					'</insertRow>' + 
+				'</dataTable>';
+
+			panaxdb.persist(insertXML, function (err, xml) {
+				if(err) done(err);
+				expect(xml).to.be.ok;
+				PanaxJS.Util.parseResults(xml, function (err, res) {
+					if(err) done(err);
+					expect(res).to.be.ok;
+					expect(res[0]).to.be.ok;
+					expect(res[0].status).to.equal('success');
+					expect(res[0].action).to.equal('insert');
+					expect(res[0].tableName).to.equal('[TestSchema].[CONTROLS_NestedForm]');
+					expect(res[0].identity).to.be.above(0);
+					identityValue = res[0].identity;
+					done();
+				});
+			});
+		});
+
+		it("should updateRow", function (done) {
+			var updateXML = 
+				'<dataTable name="TestSchema.CONTROLS_NestedForm" identityKey="Id">' + 
+					'<updateRow identityValue="' + identityValue + '">' + 
+						'<dataTable name="TestSchema.CONTROLS_NestedGrid">' +
+							'<updateRow>' +
+								'<fkey name="Id" isPK="true" maps="Id" />' +
+								'<field name="TextLimit255">\'\'Test CHILD updated\'\'</field>' +
+							'</updateRow>' +
+						'</dataTable>' +
+					'</updateRow>' + 
+				'</dataTable>';
+
+			panaxdb.persist(updateXML, function (err, xml) {
+				if(err) done(err);
+				expect(xml).to.be.ok;
+				PanaxJS.Util.parseResults(xml, function (err, res) {
+					if(err) done(err);
+					expect(res).to.be.ok;
+					expect(res[0]).to.be.ok;
+					expect(res[0].status).to.equal('success');
+					expect(res[0].action).to.equal('update');
+					expect(res[0].tableName).to.equal('[TestSchema].[CONTROLS_NestedForm]');
+					done();
+				});
+			});
+		});
+
+		it("should deleteRow", function (done) {
+			var deleteXML = 
+				'<dataTable name="TestSchema.CONTROLS_NestedForm" identityKey="Id">' + 
+					'<deleteRow identityValue="' + identityValue + '">' + 
+					'</deleteRow>' + 
+				'</dataTable>';
+
+			panaxdb.persist(deleteXML, function (err, xml) {
+				if(err) done(err);
+				expect(xml).to.be.ok;
+				PanaxJS.Util.parseResults(xml, function (err, res) {
+					if(err) done(err);
+					expect(res).to.be.ok;
+					expect(res[0]).to.be.ok;
+					expect(res[0].status).to.equal('success');
+					expect(res[0].action).to.equal('delete');
+					expect(res[0].tableName).to.equal('[TestSchema].[Empleado]');
+					done();
+				});
+			});
+		});
+
+	});
 
 });

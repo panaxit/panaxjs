@@ -150,3 +150,49 @@ EXEC sys.sp_addextendedproperty @name=N'@moveBefore', @value=N'Combobox' , @leve
 GO
 EXEC sys.sp_addextendedproperty @name=N'@tab', @value=N'Otros' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_Basic', @level2type=N'COLUMN',@level2name=N'Money'
 GO
+
+/****** Object:  Table [TestSchema].[CONTROLS_NestedForm]    Script Date: 22/07/2015 01:00:26 p.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [TestSchema].[CONTROLS_NestedForm](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[TextLimit10Chars] [nchar](10) NULL,
+ CONSTRAINT [PK_CONTROLS_NestedForm] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [TestSchema].[CONTROLS_NestedGrid]    Script Date: 22/07/2015 01:00:26 p.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [TestSchema].[CONTROLS_NestedGrid](
+	[Id] [int] NOT NULL,
+	[TextLimit255] [nvarchar](255) NULL,
+ CONSTRAINT [PK_CONTROLS_NestedGrid] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+ALTER TABLE [TestSchema].[CONTROLS_NestedGrid]  WITH CHECK ADD  CONSTRAINT [FK_CONTROLS_NestedGrid_CONTROLS_NestedForm] FOREIGN KEY([Id])
+REFERENCES [TestSchema].[CONTROLS_NestedForm] ([Id])
+GO
+ALTER TABLE [TestSchema].[CONTROLS_NestedGrid] CHECK CONSTRAINT [FK_CONTROLS_NestedGrid_CONTROLS_NestedForm]
+GO
+EXEC sys.sp_addextendedproperty @name=N'${table}[@controlType="gridView"]/${column}/@mode', @value=N'inherit' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_NestedForm', @level2type=N'COLUMN',@level2name=N'TextLimit10Chars'
+GO
+EXEC sys.sp_addextendedproperty @name=N'@mode', @value=N'inherit' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_NestedGrid', @level2type=N'COLUMN',@level2name=N'TextLimit255'
+GO
+EXEC sys.sp_addextendedproperty @name=N'scaffold', @value=N'true' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_NestedGrid', @level2type=N'COLUMN',@level2name=N'TextLimit255'
+GO
+EXEC sys.sp_addextendedproperty @name=N'[CONTROLS_Grid]@mode', @value=N'inherit' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_NestedGrid'
+GO
+EXEC sys.sp_addextendedproperty @name=N'[CONTROLS_Grid]scaffold', @value=N'true' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_NestedGrid'
+GO
