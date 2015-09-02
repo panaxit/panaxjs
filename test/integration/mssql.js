@@ -1,13 +1,14 @@
 var expect = require('chai').expect;
 var sql = require('mssql');
 var Promise = require('i-promise');
-var config = require('../../config/panax');
+var panax_config = require('../../config/panax');
+var panax_instance = panax_config.instances[panax_config.default_instance];
 var util = require('../../lib/util');
 
 describe('mssql driver', function() {
 
 	var db = new Promise(function (resolve, reject) {
-		var conn = new sql.Connection(config.db, function (err) {
+		var conn = new sql.Connection(panax_instance.db, function (err) {
 			if(err) {
 				return reject(err);
 			}

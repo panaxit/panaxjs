@@ -11,8 +11,9 @@ describe('Integration tests: Using mocks', function() {
 	var fs = require('fs');
 	var PanaxJS = require('..');
 	var util = require('../lib/util');
-	var config = require('../config/panax');
-	var panaxdb = new PanaxJS.Connection(config);
+	var panax_config = require('../config/panax');
+	var panax_instance = panax_config.instances[panax_config.default_instance];
+	var panaxdb = new PanaxJS.Connection(panax_instance);
 
   before('mock setup & authenticate', function(done) {
 		// DDL Isolation

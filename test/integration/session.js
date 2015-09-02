@@ -1,11 +1,12 @@
 var expect = require('chai').expect;
 var PanaxJS = require('../..');
-var config = require('../../config/panax');
+var panax_config = require('../../config/panax');
+var panax_instance = panax_config.instances[panax_config.default_instance];
 var util = require('../../lib/util');
 
 describe('session', function() {
 
-	var panaxdb = new PanaxJS.Connection(config);
+	var panaxdb = new PanaxJS.Connection(panax_instance);
 
 	it('should not #getSitemap when not authenticated', function(done) {
 		panaxdb.getSitemap(function (err, res) {
@@ -24,7 +25,7 @@ describe('session', function() {
 	});
 
 	it('should #authenticate with valid credentials', function(done) {
-		panaxdb.authenticate(config.ui.username, util.md5(config.ui.password), function (err, userId) {
+		panaxdb.authenticate(panax_instance.ui.username, util.md5(panax_instance.ui.password), function (err, userId) {
 			if(err) return done(err);
 			expect(userId).to.be.ok;
 			panaxdb.setParam("userId", userId);
