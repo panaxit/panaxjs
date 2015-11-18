@@ -1,4 +1,4 @@
---timeout 10000
+--timeout 20000
 --reporter spec
 test/unit.js
 test/integration.js
