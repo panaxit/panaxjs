@@ -335,7 +335,7 @@ Class.prototype.persist = function(xml, callback) {
 	var _self = this;
 	this.sql_conn.then(function (conn) {
 		var sql_req = new sql.Request(conn);
-		var sql_str = "#panax.persist @userId=" + _self.params.userId + ", @updateXML='" + xml + "'";
+		var sql_str = "#Entity.[save] @userId=" + _self.params.userId + ", @updateXML='" + xml + "'";
 		debug.info('# PanaxJS - sql_str: ' + sql_str);
 		sql_req.query(sql_str).then(function (recordset) {
 			var xml = recordset[0][''];
