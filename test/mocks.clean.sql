@@ -18,3 +18,12 @@ if object_id('[TestSchema].[CONTROLS_NestedGrid]', 'U') is not null
 
 if object_id('[TestSchema].[CONTROLS_NestedForm]', 'U') is not null
 		exec('drop table [TestSchema].[CONTROLS_NestedForm]')
+
+if object_id('[TestSchema].[CONTROLS_Profiles]', 'U') is not null
+		exec('drop table [TestSchema].[CONTROLS_Profiles]')
+
+if object_id('[TestSchema].[Profiles]', 'U') is not null
+		exec('drop table [TestSchema].[Profiles]')
+
+if object_id('[TestSchema].[CONTROLS_Advanced]', 'U') is not null
+		exec('drop table [TestSchema].[CONTROLS_Advanced]')

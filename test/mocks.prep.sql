@@ -196,3 +196,90 @@ EXEC sys.sp_addextendedproperty @name=N'[CONTROLS_Grid]@mode', @value=N'inherit'
 GO
 EXEC sys.sp_addextendedproperty @name=N'[CONTROLS_Grid]scaffold', @value=N'true' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_NestedGrid'
 GO
+
+/****** Object:  Table [TestSchema].[CONTROLS_Advanced]    Script Date: 10/6/2015 10:48:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [TestSchema].[CONTROLS_Advanced](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[EMail] [px].[email] NULL,
+	[Px.File] [px].[file] NULL,
+	[Px.Picture] [px].[picture] NULL,
+	[Px.Password] [px].[password] NULL,
+	[Color] [px].[color] NULL,
+ CONSTRAINT [PK_CONTROLS_Advanced] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [TestSchema].[CONTROLS_Profiles]    Script Date: 10/6/2015 10:48:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [TestSchema].[CONTROLS_Profiles](
+	[IdControl] [int] NOT NULL,
+	[IdProfile] [int] NOT NULL,
+ CONSTRAINT [PK_CONTROLS_Profiles] PRIMARY KEY CLUSTERED 
+(
+	[IdControl] ASC,
+	[IdProfile] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [TestSchema].[Profiles]    Script Date: 10/6/2015 10:48:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [TestSchema].[Profiles](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](255) NOT NULL,
+	[Abbv] [nvarchar](10) NULL,
+ CONSTRAINT [PK_Profiles] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+ALTER TABLE [TestSchema].[CONTROLS_Profiles]  WITH CHECK ADD  CONSTRAINT [FK_CONTROLS_Profiles_CONTROLS_Advanced] FOREIGN KEY([IdControl])
+REFERENCES [TestSchema].[CONTROLS_Advanced] ([Id])
+GO
+ALTER TABLE [TestSchema].[CONTROLS_Profiles] CHECK CONSTRAINT [FK_CONTROLS_Profiles_CONTROLS_Advanced]
+GO
+ALTER TABLE [TestSchema].[CONTROLS_Profiles]  WITH CHECK ADD  CONSTRAINT [FK_CONTROLS_Profiles_Profiles] FOREIGN KEY([IdProfile])
+REFERENCES [TestSchema].[Profiles] ([Id])
+GO
+ALTER TABLE [TestSchema].[CONTROLS_Profiles] CHECK CONSTRAINT [FK_CONTROLS_Profiles_Profiles]
+GO
+EXEC sys.sp_addextendedproperty @name=N'@moveBefore', @value=N'Px.File' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_Advanced', @level2type=N'COLUMN',@level2name=N'Color'
+GO
+EXEC sys.sp_addextendedproperty @name=N'[CONTROLS_Profiles]@headerText', @value=N'Profiles (Junction Table)' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_Advanced'
+GO
+EXEC sys.sp_addextendedproperty @name=N'[CONTROLS_Profiles]scaffold', @value=N'true' , @level0type=N'SCHEMA',@level0name=N'TestSchema', @level1type=N'TABLE',@level1name=N'CONTROLS_Advanced'
+GO
+
+SET IDENTITY_INSERT [TestSchema].[Profiles] ON 
+GO
+INSERT [TestSchema].[Profiles] ([Id], [Name], [Abbv]) VALUES (1, N'Chief Technology Officer', N'CTO')
+GO
+INSERT [TestSchema].[Profiles] ([Id], [Name], [Abbv]) VALUES (2, N'Project Manager', N'PM')
+GO
+INSERT [TestSchema].[Profiles] ([Id], [Name], [Abbv]) VALUES (3, N'Business Analyst', N'BA')
+GO
+INSERT [TestSchema].[Profiles] ([Id], [Name], [Abbv]) VALUES (4, N'Data Modeller', N'DM')
+GO
+INSERT [TestSchema].[Profiles] ([Id], [Name], [Abbv]) VALUES (5, N'Database Administrator', N'DBA')
+GO
+INSERT [TestSchema].[Profiles] ([Id], [Name], [Abbv]) VALUES (6, N'Backend Programmer', N'BE')
+GO
+INSERT [TestSchema].[Profiles] ([Id], [Name], [Abbv]) VALUES (7, N'Frontend Programmer', N'FE')
+GO
+SET IDENTITY_INSERT [TestSchema].[Profiles] OFF
+GO

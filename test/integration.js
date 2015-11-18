@@ -33,5 +33,6 @@ describe('Integration tests: Using mocks', function() {
 	require('./integration/read');
 	require('./integration/persist_table');
 	require('./integration/persist_nested');
+	require('./integration/persist_junction');
 
 });
