@@ -16,7 +16,7 @@ describe('nested table(s) persistance', function() {
 		});
   });
 
-  describe('case 1: #persist nested (1:1, 1:N) with (distinct) primaryKey & identityKey', function() {
+  describe('case 1: #persist nested table (1:1, 1:N) with (distinct) primaryKey & identityKey', function() {
 
 		var identityValue;
 
@@ -120,7 +120,7 @@ describe('nested table(s) persistance', function() {
   	
   });
 
-	describe.skip('case 2: #persist nested (1:1, 1:N) with (same) primaryKey & identityKey', function() {
+	describe('case 2: #persist nested table (1:1, 1:N) with (same) primaryKey & identityKey', function() {
 
 		var identityValue;
 		
@@ -128,11 +128,11 @@ describe('nested table(s) persistance', function() {
 			var insertXML = 
 				'<dataTable name="TestSchema.CONTROLS_NestedForm" identityKey="Id">' + 
 					'<insertRow>' + 
-						'<field name="TextLimit10Chars">\'\'Test PARENT\'\'</field>' +
-						'<dataTable name="dbo.CONTROLS_NestedGrid" identityKey="Id">' +
+						'<field name="TextLimit10Chars">\'\'PARENT\'\'</field>' +
+						'<dataTable name="TestSchema.CONTROLS_NestedGrid" identityKey="Id">' +
 							'<insertRow>' + 
 								'<fkey name="Id" isPK="true" maps="Id"/>' +
-								'<field name="TextLimit255">\'\'Test CHILD\'\'</field>' +
+								'<field name="TextLimit255">\'\'CHILD\'\'</field>' +
 							'</insertRow>' + 
 						'</dataTable>' + 
 					'</insertRow>' + 
@@ -162,7 +162,7 @@ describe('nested table(s) persistance', function() {
 						'<dataTable name="TestSchema.CONTROLS_NestedGrid">' +
 							'<updateRow>' +
 								'<fkey name="Id" isPK="true" maps="Id" />' +
-								'<field name="TextLimit255">\'\'Test CHILD updated\'\'</field>' +
+								'<field name="TextLimit255">\'\'CHILD2\'\'</field>' +
 							'</updateRow>' +
 						'</dataTable>' +
 					'</updateRow>' + 
