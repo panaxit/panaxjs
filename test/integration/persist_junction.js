@@ -84,11 +84,8 @@ describe('junction table(s) persistance', function() {
       var deleteXML = 
         '<batch>' +
           '<dataTable name="TestSchema.CONTROLS_Profiles">' +
-            '<deleteRow identityValue="\'\'' + identityValue + ' 3\'\'">' + 
-            '</deleteRow>' + 
-            '<deleteRow identityValue="\'\'' + identityValue + ' 4\'\'">' + 
-            '</deleteRow>' + 
-            '<deleteRow identityValue="\'\'' + identityValue + ' 5\'\'">' + 
+            '<deleteRow>' + 
+              '<field name="IdControl" isPK="true">\'\'' + identityValue + '\'\'</field>' +
             '</deleteRow>' + 
           '</dataTable>' +
           '<dataTable name="TestSchema.CONTROLS_Advanced" identityKey="Id">' + 
