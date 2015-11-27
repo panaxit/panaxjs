@@ -183,27 +183,27 @@ describe('nested table(s) persistance', function() {
 			});
 		});
 
-		it("should deleteRow", function (done) {
-			var deleteXML = 
-				'<dataTable name="TestSchema.CONTROLS_NestedForm" identityKey="Id">' + 
-					'<deleteRow identityValue="' + identityValue + '">' + 
-					'</deleteRow>' + 
-				'</dataTable>';
+    it("should deleteRow (parent row, ON DELETE CASCADE junction rows)", function (done) {
+      var deleteXML = 
+        '<dataTable name="TestSchema.CONTROLS_NestedForm" identityKey="Id">' + 
+          '<deleteRow identityValue="' + identityValue + '">' + 
+          '</deleteRow>' + 
+        '</dataTable>';
 
-			panaxdb.persist(deleteXML, function (err, xml) {
-				if(err) done(err);
-				expect(xml).to.be.ok;
-				PanaxJS.Util.parseResults(xml, function (err, res) {
-					if(err) done(err);
-					expect(res).to.be.ok;
-					expect(res[0]).to.be.ok;
-					expect(res[0].status).to.equal('success');
-					expect(res[0].action).to.equal('delete');
-					expect(res[0].tableName).to.equal('[TestSchema].[Empleado]');
-					done();
-				});
-			});
-		});
+      panaxdb.persist(deleteXML, function (err, xml) {
+        if(err) done(err);
+        expect(xml).to.be.ok;
+        PanaxJS.Util.parseResults(xml, function (err, res) {
+          if(err) done(err);
+          expect(res).to.be.ok;
+          expect(res[0]).to.be.ok;
+          expect(res[0].status).to.equal('success');
+          expect(res[0].action).to.equal('delete');
+          expect(res[0].tableName).to.equal('[TestSchema].[CONTROLS_NestedForm]');
+          done();
+        });
+      });
+    });
 
 	});
 
