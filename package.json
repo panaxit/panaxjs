@@ -22,7 +22,7 @@
   "dependencies": {
     "chalk": "^1.0.0",
     "i-promise": "^1.1.0",
-    "libxslt": "^0.4.1",
+    "libxmljs": "^0.16.1",
     "mkdirp": "^0.5.0",
     "mssql": "^2.1.1",
     "q": "^1.4.1"
