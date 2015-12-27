@@ -8,11 +8,13 @@
   "license": "Copyright 2015 PanaxIT (R)",
   "scripts": {
     "test:all": "node ./node_modules/istanbul/lib/cli.js cover -x \"config/*\" ./node_modules/mocha/bin/_mocha",
-    "test": "npm run test:all"
+    "test": "npm run test:all",
+    "eslint": "node node_modules/.bin/eslint -c .eslintrc --no-ignore **/**.js",
+    "eslint:fix": "node node_modules/.bin/eslint --fix -c .eslintrc --no-ignore **/**.js"
   },
   "config": {
     "ghooks": {
-      "pre-commit": "npm run test:all"
+      "pre-commit": "npm run eslint && npm run test:all"
     }
   },
   "repository": {
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "chai": "^3.0.0",
+    "eslint": "^1.10.3",
     "ghooks": "^0.3.2",
     "istanbul": "^0.3.22",
     "mocha": "^2.2.5"
