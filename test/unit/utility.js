@@ -1,7 +1,7 @@
-// ToDo: Utility Unit Tests 
+// ToDo: Utility Unit Tests
 
 describe('utility functions', function() {
 
-	it('PENDING');
+  it('PENDING')
 
-});
+})
