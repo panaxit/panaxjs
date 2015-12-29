@@ -9,8 +9,8 @@
   "scripts": {
     "test:all": "node ./node_modules/istanbul/lib/cli.js cover -x \"config/*\" ./node_modules/mocha/bin/_mocha",
     "test": "npm run test:all",
-    "eslint": "node node_modules/.bin/eslint -c .eslintrc *.js {lib}/**/*.js",
-    "eslint:fix": "node node_modules/.bin/eslint --fix -c .eslintrc *.js {lib}/**/*.js"
+    "eslint": "node node_modules/.bin/eslint -c .eslintrc *.js lib/",
+    "eslint:fix": "node node_modules/.bin/eslint --fix -c .eslintrc *.js lib/"
   },
   "config": {
     "ghooks": {
