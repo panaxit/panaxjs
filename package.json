@@ -7,6 +7,7 @@
   "private": true,
   "license": "Copyright 2015 PanaxIT (R)",
   "scripts": {
+    "commit": "git-cz",
     "test:all": "node ./node_modules/istanbul/lib/cli.js cover -x \"config/*\" ./node_modules/mocha/bin/_mocha",
     "test": "npm run test:all",
     "eslint": "node node_modules/.bin/eslint -c .eslintrc *.js lib/**/*.js",
@@ -21,6 +22,9 @@
     "type": "git",
     "url": "https://benoror@bitbucket.org/benoror/panaxjs.git"
   },
+  "czConfig": {
+    "path": "node_modules/cz-conventional-changelog"
+  },
   "dependencies": {
     "chalk": "^1.0.0",
     "i-promise": "^1.1.0",
@@ -31,6 +35,8 @@
   },
   "devDependencies": {
     "chai": "^3.0.0",
+    "commitizen": "^2.4.6",
+    "cz-conventional-changelog": "^1.1.5",
     "eslint": "^1.10.3",
     "ghooks": "^0.3.2",
     "istanbul": "^0.3.22",
