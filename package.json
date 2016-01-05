@@ -16,14 +16,14 @@
   "config": {
     "ghooks": {
       "pre-commit": "npm run eslint && npm run test:all"
+    },
+    "commitizen" :{
+      "path": "node_modules/cz-conventional-changelog"
     }
   },
   "repository": {
     "type": "git",
     "url": "https://benoror@bitbucket.org/benoror/panaxjs.git"
-  },
-  "czConfig": {
-    "path": "node_modules/cz-conventional-changelog"
   },
   "dependencies": {
     "chalk": "^1.0.0",
