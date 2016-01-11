@@ -17,7 +17,7 @@
     "ghooks": {
       "pre-commit": "npm run eslint && npm run test:all"
     },
-    "commitizen" :{
+    "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
   },
@@ -29,6 +29,7 @@
     "chalk": "^1.0.0",
     "i-promise": "^1.1.0",
     "libxmljs": "^0.16.1",
+    "lodash": "^3.10.1",
     "mkdirp": "^0.5.0",
     "mssql": "^2.1.1",
     "q": "^1.4.1"
