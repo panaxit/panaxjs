@@ -2,7 +2,7 @@
   "name": "panaxjs",
   "version": "0.0.1",
   "author": "Benjamin Orozco <benoror@gmail.com>",
-  "description": "PanaxJS - Panax Driver",
+  "description": "PanaxJS - PanaxDB Driver",
   "main": "index.js",
   "license": "Apache-2.0",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://benoror@bitbucket.org/benoror/panaxjs.git"
+    "url": "https://github.com/panaxit/panaxjs.git"
   },
   "dependencies": {
     "chalk": "^1.0.0",
