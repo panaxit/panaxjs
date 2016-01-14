@@ -4,8 +4,7 @@
   "author": "Benjamin Orozco <benoror@gmail.com>",
   "description": "PanaxJS - Panax Driver",
   "main": "index.js",
-  "private": true,
-  "license": "Copyright 2015 PanaxIT (R)",
+  "license": "Apache-2.0",
   "scripts": {
     "commit": "git-cz",
     "test:all": "node ./node_modules/istanbul/lib/cli.js cover -x \"config/*\" ./node_modules/mocha/bin/_mocha",
